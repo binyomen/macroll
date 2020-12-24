@@ -1,5 +1,21 @@
 {
-  "devDependencies": {
-    "typescript": "^4.1.3"
-  }
+    "name": "macroll",
+    "version": "0.1.0",
+    "description": "Ultra-customizable macros for roll20.net",
+    "license": "MIT",
+    "scripts": {
+        "watch": "webpack --watch",
+        "build": "cross-env NODE_ENV=production webpack",
+        "clean": "rimraf dist"
+    },
+    "devDependencies": {
+        "copy-webpack-plugin": "^7.0.0",
+        "cross-env": "^7.0.3",
+        "rimraf": "^3.0.2",
+        "ts-loader": "^8.0.12",
+        "typescript": "^4.1.3",
+        "webextension-polyfill-ts": "^0.22.0",
+        "webpack": "^5.11.0",
+        "webpack-cli": "^4.2.0"
+    }
 }
