@@ -1,6 +1,6 @@
 {
     "name": "macroll",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Ultra-customizable macros for roll20.net",
     "license": "MIT",
     "scripts": {
