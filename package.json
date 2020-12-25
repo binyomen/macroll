@@ -8,6 +8,7 @@
         "build": "run-s build:*",
         "clean": "run-s clean:*",
         "lint": "run-s lint:*",
+        "debug-build": "webpack",
         "build:webpack": "cross-env NODE_ENV=production webpack",
         "build:package": "web-ext build --source-dir dist --overwrite-dest",
         "clean:dist": "rimraf dist",
