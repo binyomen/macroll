@@ -1,0 +1,8 @@
+#macroll-input {
+    position: fixed;
+    font-size: 5rem;
+    --width: 10em;
+    width: var(--width);
+    top: 50vh;
+    left: calc(50vw - (var(--width) / 2));
+}
