@@ -4,6 +4,12 @@
     "description": "Ultra-customizable macros for roll20.net",
     "version": "0.1.0",
 
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{d09a7b68-da6a-47f8-8eee-b4e6ce8ca2ea}"
+        }
+    },
+
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
