@@ -7,6 +7,7 @@
         "watch": "webpack --watch",
         "build": "cross-env NODE_ENV=production webpack",
         "clean": "rimraf dist",
+        "lint:web-ext": "web-ext lint --source-dir dist",
         "package:firefox": "web-ext build --source-dir dist --overwrite-dest"
     },
     "devDependencies": {
