@@ -17,6 +17,7 @@ module.exports = {
         'arrow-parens': ['error', 'as-needed'],
         'padded-blocks': ['error', 'never'],
         'func-style': 'off',
+        'no-console': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],
