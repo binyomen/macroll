@@ -11,6 +11,7 @@
         "lint": "run-s lint:*",
         "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "debug-build": "webpack",
+        "validate": "npm run build && npm run lint && npm test",
         "build:webpack": "cross-env NODE_ENV=production webpack",
         "build:package": "web-ext build --source-dir dist --overwrite-dest",
         "clean:dist": "rimraf dist",
