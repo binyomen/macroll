@@ -23,6 +23,14 @@ jobs:
     - name: Lint
       run: npm run lint
 
+    - name: Code coverage
+      run: npm run coverage
+
+    - name: Publish to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Publish the extension build output as an artifact
       uses: actions/upload-artifact@v2
       with:
