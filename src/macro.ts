@@ -40,3 +40,7 @@ export class RollSet implements IRollSet {
         return `${rollString} + ${this.modifier}`;
     }
 }
+
+export function parseMacro(macroString: string): string[] {
+    return [macroString];
+}

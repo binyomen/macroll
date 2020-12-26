@@ -1,0 +1,4 @@
+{
+    "require": "./test/ts-node.js",
+    "reporter": "dot"
+}
