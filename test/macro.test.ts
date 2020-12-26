@@ -27,7 +27,7 @@ chai.should();
     }
 
     @test 'should remove extra spaces'() {
-        parseMacro('mac 1  2 3').should.deep.equal({name: 'mac', args: [1, 2, 3]});
+        parseMacro('  mac 1  2 3 ').should.deep.equal({name: 'mac', args: [1, 2, 3]});
     }
 
     @test 'should handle escapes properly'() {

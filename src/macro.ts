@@ -56,14 +56,14 @@ export function parseMacro(macroString: string): IMacroCall {
         throw new Error(`Error parsing macro string: ${macroString}`);
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const result = lines[0]!;
+    const result = lines[0]!.filter(s => s.length > 0);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const name = result[0]!;
 
     return {
         name,
-        args: result.slice(1).filter(s => s.length > 0).map(parseArg),
+        args: result.slice(1).map(parseArg),
     };
 }
 
