@@ -51,7 +51,7 @@ export interface IMacroCall {
 }
 
 export function parseMacro(macroString: string): IMacroCall {
-    const lines = parse(macroString, {delimiter: ' ', trim: true}) as string[][];
+    const lines = parse(macroString, {delimiter: ' ', escape: '\\', trim: true}) as string[][];
     if (lines.length !== 1) {
         throw new Error(`Error parsing macro string: ${macroString}`);
     }

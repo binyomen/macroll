@@ -29,6 +29,11 @@ chai.should();
     @test 'should remove extra spaces'() {
         parseMacro('mac 1  2 3').should.deep.equal({name: 'mac', args: [1, 2, 3]});
     }
+
+    @test 'should handle escapes properly'() {
+        parseMacro('mac arg1 "longer arg" "arg with \\"stuff in quotes\\"" "arg with \\\\ random backslashes"')
+            .should.deep.equal({name: 'mac', args: ['arg1', 'longer arg', 'arg with "stuff in quotes"', 'arg with \\ random backslashes']});
+    }
 }
 
 @suite class ParseArgTests {
