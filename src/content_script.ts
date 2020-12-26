@@ -1,3 +1,6 @@
+import * as dnd from './builtins/dnd';
+import * as macro from './macro';
+
 const INPUT_ID = 'macroll-input';
 
 document.addEventListener('keydown', event => {
@@ -16,13 +19,16 @@ function createInputElement(): HTMLInputElement {
     input.id = INPUT_ID;
     input.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
-            submitMacro(input.value);
+            runMacro(input.value);
             input.remove();
         }
     });
     return input;
 }
 
-function submitMacro(macro: string): void {
-    console.log(macro);
+function runMacro(macroText: string): void {
+    console.log(macroText);
+    const roll = new macro.Roll(1, 20);
+    const rollSet = new macro.RollSet([roll], -5);
+    dnd.attack(rollSet, rollSet);
 }
