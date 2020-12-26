@@ -24,6 +24,12 @@ module.exports = {
         'one-var': 'off',
         'no-magic-numbers': 'off',
         'lines-between-class-members': 'off',
+        'quote-props': ['error', 'as-needed'],
+        'object-property-newline': 'off',
+        'sort-keys': 'off',
+        'newline-per-chained-call': 'off',
+        'prefer-named-capture-group': 'off',
+        'no-else-return': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],
@@ -34,11 +40,15 @@ module.exports = {
         'space-before-function-paren': 'off',
         '@typescript-eslint/space-before-function-paren': ['error', 'never'],
 
+        'comma-dangle': 'off',
+        '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
+
         '@typescript-eslint/prefer-readonly-parameter-types': 'off',
         '@typescript-eslint/no-inferrable-types': 'off',
         '@typescript-eslint/no-magic-numbers': 'off',
         '@typescript-eslint/lines-between-class-members': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
+        '@typescript-eslint/no-type-alias': ['error', {allowAliases: 'in-unions'}],
     },
     env: {
         es6: true,

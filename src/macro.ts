@@ -1,3 +1,5 @@
+import parse from 'csv-parse/lib/sync';
+
 export interface IRoll {
     readonly numDice: number;
     readonly dieValue: number;
@@ -41,6 +43,35 @@ export class RollSet implements IRollSet {
     }
 }
 
-export function parseMacro(macroString: string): string[] {
-    return [macroString];
+export type MacroArg = string | number;
+
+export interface IMacroCall {
+    readonly name: string;
+    readonly args: MacroArg[];
+}
+
+export function parseMacro(macroString: string): IMacroCall {
+    const lines = parse(macroString, {delimiter: ' ', trim: true}) as string[][];
+    if (lines.length !== 1) {
+        throw new Error(`Error parsing macro string: ${macroString}`);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const result = lines[0]!;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const name = result[0]!;
+
+    return {
+        name,
+        args: result.slice(1).filter(s => s.length > 0).map(parseArg),
+    };
+}
+
+const NUM_PATTERN = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/u;
+export function parseArg(arg: string): MacroArg {
+    if (NUM_PATTERN.test(arg)) {
+        return Number.parseFloat(arg);
+    } else {
+        return arg;
+    }
 }
