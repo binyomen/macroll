@@ -50,6 +50,10 @@ const MINUS = Operator.Minus;
         parseMacro('mac arg1 "longer arg" "arg with \\"stuff in quotes\\"" "arg with \\\\ random backslashes"')
             .should.deep.equal({name: 'mac', args: ['arg1', 'longer arg', 'arg with "stuff in quotes"', 'arg with \\ random backslashes']});
     }
+
+    @test 'should fail to parse multi-line strings'() {
+        (() => parseMacro('line1 and\nline 2')).should.throw("Error parsing macro string: line1 and\nline 2");
+    }
 }
 
 @suite class ParseArgTests {
