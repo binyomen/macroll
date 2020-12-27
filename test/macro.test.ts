@@ -26,6 +26,11 @@ const MINUS = Operator.Minus;
         parseMacro('mac 1 2 3 "5.829" -5').should.deep.equal({name: 'mac', args: [1, 2, 3, 5.829, -5]});
     }
 
+    @test 'should parse macro with boolean arguments'() {
+        parseMacro('mac true').should.deep.equal({name: 'mac', args: [true]});
+        parseMacro('mac true false true true').should.deep.equal({name: 'mac', args: [true, false, true, true]});
+    }
+
     @test 'should parse macro with roll set arguments'() {
         parseMacro('mac [d20]').should.deep.equal({name: 'mac', args: [rs([r(1, 20, PLUS)], 0)]});
         parseMacro('mac [d20] "[4d20 + 7 - d6]"').should.deep.equal({name: 'mac', args: [
@@ -39,7 +44,8 @@ const MINUS = Operator.Minus;
     }
 
     @test 'should parse macro with mixed type arguments'() {
-        parseMacro('mac hello 5 0 [d20] -4.8 there 5.').should.deep.equal({name: 'mac', args: ['hello', 5, 0, rs([r(1, 20, PLUS)], 0), -4.8, 'there', 5]});
+        parseMacro('mac hello false 5 0 [d20] -4.8 there 5.')
+            .should.deep.equal({name: 'mac', args: ['hello', false, 5, 0, rs([r(1, 20, PLUS)], 0), -4.8, 'there', 5]});
     }
 
     @test 'should remove extra spaces'() {
@@ -100,6 +106,15 @@ const MINUS = Operator.Minus;
         parseArg('-00573.294820300').should.equal(-573.2948203);
     }
 
+    @test 'should parse booleans'() {
+        parseArg('true').should.deep.equal(true);
+        parseArg('false').should.deep.equal(false);
+        parseArg(' true').should.deep.equal(' true');
+        parseArg(' false').should.deep.equal(' false');
+        parseArg('true ').should.deep.equal('true ');
+        parseArg('false ').should.deep.equal('false ');
+    }
+
     @test 'should parse single rolls'() {
         parseArg('[d20]').should.deep.equal(rs([r(1, 20, PLUS)], 0));
         parseArg('[1d20]').should.deep.equal(rs([r(1, 20, PLUS)], 0));
@@ -108,6 +123,8 @@ const MINUS = Operator.Minus;
 
         parseArg('[5] ').should.deep.equal(rs([], 5));
         parseArg('[ 5    ] ').should.deep.equal(rs([], 5));
+
+        parseArg(' [d20]').should.equal(' [d20]');
     }
 
     @test 'should parse multiple rolls'() {
@@ -133,6 +150,5 @@ const MINUS = Operator.Minus;
         parseArg('hello\\').should.equal('hello\\');
         parseArg('hello with spaces whoo').should.equal('hello with spaces whoo');
         parseArg('hello with \\spaces whoo').should.equal('hello with \\spaces whoo');
-        parseArg(' [d20]').should.equal(' [d20]');
     }
 }

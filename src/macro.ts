@@ -53,7 +53,7 @@ export class RollSet implements IRollSet {
     }
 }
 
-export type MacroArg = string | number | IRollSet;
+export type MacroArg = number | boolean | IRollSet | string;
 
 export interface IMacroCall {
     readonly name: string;
@@ -206,6 +206,10 @@ const NUM_PATTERN = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/u;
 export function parseArg(arg: string): MacroArg {
     if (NUM_PATTERN.test(arg)) {
         return Number.parseFloat(arg);
+    } else if (arg === 'true') {
+        return true;
+    } else if (arg === 'false') {
+        return false;
     } else if (arg.startsWith('[')) {
         return new RollSetParser(arg).parse();
     } else {
