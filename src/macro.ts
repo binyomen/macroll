@@ -88,6 +88,7 @@ export type MacroCommand = string | ITemplate;
 
 export interface IMacroResult {
     commands: MacroCommand[];
+    onComplete?: (elt: HTMLElement) => IMacroResult | null;
 }
 
 export function parseMacro(macroString: string): IMacroCall {

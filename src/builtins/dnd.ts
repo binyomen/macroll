@@ -37,6 +37,12 @@ export default {
                     fields,
                 },
             ],
+            onComplete: (elt: HTMLElement): IMacroResult | null => {
+                console.log(elt);
+                return {
+                    commands: ['it worked!', 'Whoo!'],
+                };
+            },
         };
     },
 };

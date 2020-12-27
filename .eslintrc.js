@@ -37,6 +37,7 @@ module.exports = {
         'no-extra-parens': 'off',
         'max-params': 'off',
         'array-element-newline': ['error', 'consistent'],
+        'no-inline-comments': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],

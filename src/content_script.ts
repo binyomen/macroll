@@ -34,9 +34,32 @@ function createInputElement(): HTMLInputElement {
 }
 
 function runMacro(macroText: string): void {
+    const lastMessageId = getLastMessageId();
+
     const parsed = macro.parseMacro(macroText);
     const func = new store.MacroStore().get(parsed.name);
-    const message = toRoll20Syntax(func(...parsed.args));
+    const result = func(...parsed.args);
+
+    sendMessage(result);
+
+    function executeOnComplete(): void {
+        const newLastMessage = getLastMessage();
+        if (newLastMessage === null || newLastMessage.dataset.messageid === lastMessageId) {
+            setTimeout(executeOnComplete, 100 /* 100ms */);
+        } else {
+            const newResult = result.onComplete!(newLastMessage);
+            if (newResult !== null) {
+                sendMessage(newResult);
+            }
+        }
+    }
+    if ('onComplete' in result) {
+        setTimeout(executeOnComplete, 100 /* 100ms */);
+    }
+}
+
+function sendMessage(result: macro.IMacroResult): void {
+    const message = toRoll20Syntax(result);
     console.log(message);
 
     const oldText = CHAT_INPUT.value;
@@ -59,4 +82,17 @@ function toRoll20Syntax(result: macro.IMacroResult): string {
         }
     }
     return lines.join('\n');
+}
+
+function getLastMessage(): HTMLElement | null {
+    return document.querySelector('#textchat .content .message:last-child');
+}
+
+function getLastMessageId(): string {
+    const msg = getLastMessage();
+    if (msg === null) {
+        return '';
+    } else {
+        return msg.dataset.messageid!;
+    }
 }
