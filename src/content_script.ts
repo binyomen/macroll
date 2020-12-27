@@ -1,5 +1,5 @@
-import * as dnd from './builtins/dnd';
 import * as macro from './macro';
+import dnd from './builtins/dnd';
 
 const INPUT_ID = 'macroll-input';
 
