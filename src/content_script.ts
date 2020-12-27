@@ -28,7 +28,7 @@ function createInputElement(): HTMLInputElement {
 
 function runMacro(macroText: string): void {
     console.log(macroText);
-    const roll = new macro.Roll(1, 20);
+    const roll = new macro.Roll(1, 20, macro.Operator.Plus);
     const rollSet = new macro.RollSet([roll], -5);
     dnd.attack(rollSet, rollSet);
 }

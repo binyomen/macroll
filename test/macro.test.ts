@@ -1,8 +1,17 @@
-import { suite, test } from '@testdeck/mocha';
+import {suite, test} from '@testdeck/mocha';
 import * as chai from 'chai';
-import { parseMacro, parseArg } from '../src/macro.ts';
+import {parseMacro, parseArg, Operator, IRoll, Roll, IRollSet, RollSet} from '../src/macro.ts';
 
 chai.should();
+
+function r(numDice: number, dieValue: number, operator: Operator): IRoll {
+    return new Roll(numDice, dieValue, operator);
+}
+function rs(rolls: IRoll[], modifier: number) {
+    return new RollSet(rolls, modifier);
+}
+const PLUS = Operator.Plus;
+const MINUS = Operator.Minus;
 
 @suite class ParseMacroTests {
     @test 'should parse argumentless macro'() {
@@ -17,13 +26,20 @@ chai.should();
         parseMacro('mac 1 2 3 "5.829" -5').should.deep.equal({name: 'mac', args: [1, 2, 3, 5.829, -5]});
     }
 
+    @test 'should parse macro with roll set arguments'() {
+        parseMacro('mac [d20]').should.deep.equal({name: 'mac', args: [rs([r(1, 20, PLUS)], 0)]});
+        parseMacro('mac [d20] "[4d20 + 7 - d6]"').should.deep.equal({name: 'mac', args: [
+            rs([r(1, 20, PLUS)], 0),
+            rs([r(4, 20, PLUS), r(1, 6, MINUS)], 7)]});
+    }
+
     @test 'should parse macro with string arguments'() {
         parseMacro('mac hello').should.deep.equal({name: 'mac', args: ['hello']});
         parseMacro('mac hello there it\'s "a me," Mario!').should.deep.equal({name: 'mac', args: ['hello', 'there', 'it\'s', 'a me,', 'Mario!']});
     }
 
     @test 'should parse macro with mixed type arguments'() {
-        parseMacro('mac hello 5 0 -4.8 there 5.').should.deep.equal({name: 'mac', args: ['hello', 5, 0, -4.8, 'there', 5]});
+        parseMacro('mac hello 5 0 [d20] -4.8 there 5.').should.deep.equal({name: 'mac', args: ['hello', 5, 0, rs([r(1, 20, PLUS)], 0), -4.8, 'there', 5]});
     }
 
     @test 'should remove extra spaces'() {
@@ -37,13 +53,6 @@ chai.should();
 }
 
 @suite class ParseArgTests {
-    @test 'should parse strings'() {
-        parseArg('hello').should.equal('hello');
-        parseArg('hello\\').should.equal('hello\\');
-        parseArg('hello with spaces whoo').should.equal('hello with spaces whoo');
-        parseArg('hello with \\spaces whoo').should.equal('hello with \\spaces whoo');
-    }
-
     @test 'should parse zero'() {
         parseArg('0').should.equal(0);
         parseArg('+0').should.equal(0);
@@ -85,5 +94,41 @@ chai.should();
         parseArg('-000506.00').should.equal(-506);
 
         parseArg('-00573.294820300').should.equal(-573.2948203);
+    }
+
+    @test 'should parse single rolls'() {
+        parseArg('[d20]').should.deep.equal(rs([r(1, 20, PLUS)], 0));
+        parseArg('[1d20]').should.deep.equal(rs([r(1, 20, PLUS)], 0));
+        parseArg('[6d3]').should.deep.equal(rs([r(6, 3, PLUS)], 0));
+        parseArg('[ 6d3    ] ').should.deep.equal(rs([r(6, 3, PLUS)], 0));
+
+        parseArg('[5] ').should.deep.equal(rs([], 5));
+        parseArg('[ 5    ] ').should.deep.equal(rs([], 5));
+    }
+
+    @test 'should parse multiple rolls'() {
+        parseArg('[d20+4+3d10]').should.deep.equal(rs([r(1, 20, PLUS), r(3, 10, PLUS)], 4));
+        parseArg('[d20-4-3d10]').should.deep.equal(rs([r(1, 20, PLUS), r(3, 10, MINUS)], -4));
+        parseArg('[   d20 +  4+   3d10 ]  ').should.deep.equal(rs([r(1, 20, PLUS), r(3, 10, PLUS)], 4));
+        parseArg('[   d20 -  4-   3d10 ]  ').should.deep.equal(rs([r(1, 20, PLUS), r(3, 10, MINUS)], -4));
+    }
+
+    @test 'should fail on invalid roll syntax'() {
+        (() => parseArg('[d20')).should.throw("Unexpected character 'null'. Expected ']'.");
+        (() => parseArg('[+d20]')).should.throw("Unexpected character '+'. Expected 'd' or a digit.");
+        (() => parseArg('[-d20]')).should.throw("Unexpected character '-'. Expected 'd' or a digit.");
+        (() => parseArg('[d20 d10]')).should.throw("Invalid operator 'd'.");
+        (() => parseArg('[4d30d6]')).should.throw("Invalid operator 'd'.");
+        (() => parseArg('[d20 3d10]')).should.throw("Invalid operator '3'.");
+        (() => parseArg('[4d+5]')).should.throw("Number cannot start with '+'.");
+        (() => parseArg('[4d + 5]')).should.throw("Number cannot start with ' '.");
+    }
+
+    @test 'should parse strings'() {
+        parseArg('hello').should.equal('hello');
+        parseArg('hello\\').should.equal('hello\\');
+        parseArg('hello with spaces whoo').should.equal('hello with spaces whoo');
+        parseArg('hello with \\spaces whoo').should.equal('hello with \\spaces whoo');
+        parseArg(' [d20]').should.equal(' [d20]');
     }
 }

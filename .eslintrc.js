@@ -30,6 +30,11 @@ module.exports = {
         'newline-per-chained-call': 'off',
         'prefer-named-capture-group': 'off',
         'no-else-return': 'off',
+        'max-statements': 'off',
+        'no-ternary': 'off',
+        'operator-linebreak': ['error', 'after'],
+        'wrap-regex': 'off',
+        "no-extra-parens": "off",
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],
@@ -49,6 +54,9 @@ module.exports = {
         '@typescript-eslint/lines-between-class-members': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
         '@typescript-eslint/no-type-alias': ['error', {allowAliases: 'in-unions'}],
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        "@typescript-eslint/no-extra-parens": 'off',
+        "@typescript-eslint/naming-convention": ['error', {selector: 'enumMember', format: ['PascalCase']}],
     },
     env: {
         es6: true,
