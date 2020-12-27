@@ -27,6 +27,9 @@ function createInputElement(): HTMLInputElement {
             input.remove();
         }
     });
+    input.addEventListener('blur', () => {
+        input.remove();
+    });
     return input;
 }
 
