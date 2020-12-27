@@ -51,8 +51,9 @@ export class RollSet implements IRollSet {
         if (this.rolls.length === 0) {
             return `[[${this.modifier}]]`;
         } else {
-            let rollString = '[[';
-            for (const roll of this.rolls) {
+            let rollString = `[[${this.rolls[0]}`;
+
+            for (const roll of this.rolls.slice(1)) {
                 const op = roll.operator === Operator.Plus ?
                     '+' :
                     '-';

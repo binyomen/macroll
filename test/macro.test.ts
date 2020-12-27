@@ -24,8 +24,9 @@ const MINUS = Operator.Minus;
         rs([], 5).toString().should.equal('[[5]]');
         rs([], -5).toString().should.equal('[[-5]]');
 
-        rs([r(3, 20, PLUS)], 0).toString().should.equal('[[ + 3d20 + 0]]');
-        rs([r(3, 20, MINUS), r(1, 6, MINUS)], -8).toString().should.equal('[[ - 3d20 - 1d6 - 8]]');
+        rs([r(3, 20, PLUS)], 0).toString().should.equal('[[3d20 + 0]]');
+        rs([r(3, 20, PLUS), r(1, 6, PLUS)], -8).toString().should.equal('[[3d20 + 1d6 - 8]]');
+        rs([r(3, 20, PLUS), r(1, 6, MINUS)], -8).toString().should.equal('[[3d20 - 1d6 - 8]]');
     }
 }
 

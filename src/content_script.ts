@@ -3,6 +3,10 @@ import * as store from './macro_store';
 
 const INPUT_ID = 'macroll-input';
 
+const CHAT = document.getElementById('textchat-input')!;
+const CHAT_INPUT = CHAT.getElementsByTagName('textarea')![0]!;
+const CHAT_SUBMIT = CHAT.getElementsByTagName('button')![0]!;
+
 document.addEventListener('keydown', event => {
     if (event.altKey &&
             event.shiftKey &&
@@ -29,10 +33,16 @@ function createInputElement(): HTMLInputElement {
 function runMacro(macroText: string): void {
     const parsed = macro.parseMacro(macroText);
     const func = new store.MacroStore().get(parsed.name);
-    console.log(toRoll20Syntax(func(...parsed.args)));
+    const message = toRoll20Syntax(func(...parsed.args));
+    console.log(message);
+
+    const oldText = CHAT_INPUT.value;
+    CHAT_INPUT.value = message;
+    CHAT_SUBMIT.click();
+    CHAT_INPUT.value = oldText;
 }
 
-function toRoll20Syntax(result: macro.IMacroResult): string[] {
+function toRoll20Syntax(result: macro.IMacroResult): string {
     const lines = [];
     for (const command of result.commands) {
         if (typeof command === 'string') {
@@ -45,5 +55,5 @@ function toRoll20Syntax(result: macro.IMacroResult): string[] {
             lines.push(template);
         }
     }
-    return lines;
+    return lines.join('\n');
 }

@@ -1,8 +1,11 @@
 #macroll-input {
-    position: fixed;
+    position: absolute;
     font-size: 5rem;
-    --width: 10em;
+    --width: 20em;
     width: var(--width);
+    height: 1em;
     top: 50vh;
     left: calc(50vw - (var(--width) / 2));
+
+    z-index: 99999999;
 }

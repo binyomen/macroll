@@ -3,25 +3,27 @@ import type {IMacroResult, IRollSet, MacroArg} from '../macro';
 export default {
     attack: (
         name: string,
-        mod: number,
         atk: IRollSet,
         dmg: IRollSet,
         advantage: string = 'norm',
         charname: string = '',
     ): IMacroResult => {
         const fields: Record<string, MacroArg> = {
+            attack: 1,
+            damage: 1,
             rname: name,
-            mod,
             r1: atk,
-            hldmg: dmg,
+            r2: atk,
+            dmg1: dmg,
+            dmg1flag: 1,
         };
 
-        if (advantage === 'norm') {
-            fields.normal = 1;
-        } else if (advantage === 'adv') {
+        if (advantage === 'adv') {
             fields.advantage = 1;
         } else if (advantage === 'dadv') {
             fields.disadvantage = 1;
+        } else {
+            fields.normal = 1;
         }
 
         if (charname.length > 0) {
