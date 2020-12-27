@@ -9,9 +9,17 @@ export interface IMacroStore {
 }
 
 export class MacroStore implements IMacroStore {
-    // eslint-disable-next-line class-methods-use-this
+    private readonly macros: Record<string, MacroFunction> = {};
+
+    public constructor() {
+        for (const name in dnd) {
+            if (Object.prototype.hasOwnProperty.call(dnd, name)) {
+                this.macros[name] = (dnd as Record<string, MacroFunction>)[name]!;
+            }
+        }
+    }
+
     public get(name: string): MacroFunction {
-        console.log(name);
-        return dnd.attack;
+        return this.macros[name]!;
     }
 }
