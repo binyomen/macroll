@@ -29,5 +29,21 @@ function createInputElement(): HTMLInputElement {
 function runMacro(macroText: string): void {
     const parsed = macro.parseMacro(macroText);
     const func = new store.MacroStore().get(parsed.name);
-    func(...parsed.args);
+    console.log(toRoll20Syntax(func(...parsed.args)));
+}
+
+function toRoll20Syntax(result: macro.IMacroResult): string[] {
+    const lines = [];
+    for (const command of result.commands) {
+        if (typeof command === 'string') {
+            lines.push(command);
+        } else {
+            let template = `&{template:${command.name}} `;
+            for (const [key, value] of Object.entries(command.fields)) {
+                template += `{{${key}=${value}}} `;
+            }
+            lines.push(template);
+        }
+    }
+    return lines;
 }

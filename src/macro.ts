@@ -48,8 +48,26 @@ export class RollSet implements IRollSet {
     }
 
     public toString(): string {
-        const rollString = this.rolls.map(r => r.toString()).join(' + ');
-        return `${rollString} + ${this.modifier}`;
+        if (this.rolls.length === 0) {
+            return `[[${this.modifier}]]`;
+        } else {
+            let rollString = '[[';
+            for (const roll of this.rolls) {
+                const op = roll.operator === Operator.Plus ?
+                    '+' :
+                    '-';
+                rollString += ` ${op} ${roll}`;
+            }
+
+            if (this.modifier < 0) {
+                rollString += ` - ${Math.abs(this.modifier)}`;
+            } else {
+                rollString += ` + ${this.modifier}`;
+            }
+
+            rollString += ']]';
+            return rollString;
+        }
     }
 }
 
@@ -60,8 +78,15 @@ export interface IMacroCall {
     readonly args: MacroArg[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ITemplate {
+    name: string;
+    fields: Record<string, MacroArg>;
+}
+
+export type MacroCommand = string | ITemplate;
+
 export interface IMacroResult {
+    commands: MacroCommand[];
 }
 
 export function parseMacro(macroString: string): IMacroCall {

@@ -34,7 +34,9 @@ module.exports = {
         'no-ternary': 'off',
         'operator-linebreak': ['error', 'after'],
         'wrap-regex': 'off',
-        "no-extra-parens": "off",
+        'no-extra-parens': 'off',
+        'max-params': 'off',
+        'array-element-newline': ['error', 'consistent'],
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],
@@ -55,8 +57,8 @@ module.exports = {
         '@typescript-eslint/restrict-template-expressions': 'off',
         '@typescript-eslint/no-type-alias': ['error', {allowAliases: 'in-unions'}],
         '@typescript-eslint/no-non-null-assertion': 'off',
-        "@typescript-eslint/no-extra-parens": 'off',
-        "@typescript-eslint/naming-convention": ['error', {selector: 'enumMember', format: ['PascalCase']}],
+        '@typescript-eslint/no-extra-parens': 'off',
+        '@typescript-eslint/naming-convention': ['error', {selector: 'enumMember', format: ['PascalCase']}],
     },
     env: {
         es6: true,
