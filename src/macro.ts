@@ -1,4 +1,6 @@
-import parse from 'csv-parse/lib/sync';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import * as papa from 'papaparse';
 
 export enum Operator {
     Plus = 'Operator.Plus',
@@ -58,12 +60,19 @@ export interface IMacroCall {
     readonly args: MacroArg[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IMacroResult {
+}
+
 export function parseMacro(macroString: string): IMacroCall {
-    const lines = parse(macroString, {delimiter: ' ', escape: '\\', trim: true}) as string[][];
-    if (lines.length !== 1) {
+    const parseResult =
+        // eslint-disable-next-line max-len
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        papa.parse(macroString, {delimiter: ' ', escapeChar: '\\'}) as {data: string[][]};
+    if (parseResult.data.length !== 1) {
         throw new Error(`Error parsing macro string: ${macroString}`);
     }
-    const result = lines[0]!.filter(s => s.length > 0);
+    const result = parseResult.data[0]!.filter(s => s.length > 0);
 
     const name = result[0]!;
     return {

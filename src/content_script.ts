@@ -1,5 +1,5 @@
 import * as macro from './macro';
-import dnd from './builtins/dnd';
+import * as store from './macro_store';
 
 const INPUT_ID = 'macroll-input';
 
@@ -27,8 +27,7 @@ function createInputElement(): HTMLInputElement {
 }
 
 function runMacro(macroText: string): void {
-    console.log(macroText);
-    const roll = new macro.Roll(1, 20, macro.Operator.Plus);
-    const rollSet = new macro.RollSet([roll], -5);
-    dnd.attack(rollSet, rollSet);
+    const parsed = macro.parseMacro(macroText);
+    const func = new store.MacroStore().get(parsed.name);
+    func(...parsed.args);
 }

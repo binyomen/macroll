@@ -25,7 +25,6 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
-        fallback: { 'stream': false }
     },
     plugins: [
         new CopyPlugin({
