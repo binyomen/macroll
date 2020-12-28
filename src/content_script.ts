@@ -95,7 +95,8 @@ function sendMessage(result: macro.IMacroResult): void {
     const message = toRoll20Syntax(result);
     console.log(message);
 
-    const oldText = CHAT_INPUT.value;
+    // For some reason there's an invisible newline in an empty chat box.
+    const oldText = CHAT_INPUT.value.trim();
     CHAT_INPUT.value = message;
     CHAT_SUBMIT.click();
     CHAT_INPUT.value = oldText;
