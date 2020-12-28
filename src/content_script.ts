@@ -55,7 +55,7 @@ function createInputElement(): HTMLInputElement {
                 break;
         }
     });
-    input.addEventListener('change', () => {
+    input.addEventListener('input', () => {
         if (historyIndex === 0) {
             history.updateCurrent(input.value);
         }
