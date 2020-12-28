@@ -24,6 +24,7 @@ document.addEventListener('keydown', event => {
 
 function removeInputElement(input: HTMLInputElement): void {
     historyIndex = 0;
+    history.updateCurrent('');
     input.remove();
 }
 
@@ -46,7 +47,6 @@ function createInputElement(): HTMLInputElement {
                 const macroInput = input.value;
                 runMacro(macroInput);
                 history.add(macroInput);
-                history.updateCurrent('');
                 removeInputElement(input);
                 break;
             }
