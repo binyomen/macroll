@@ -38,6 +38,7 @@ module.exports = {
         'max-params': 'off',
         'array-element-newline': ['error', 'consistent'],
         'no-inline-comments': 'off',
+        'default-case': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],

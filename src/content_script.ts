@@ -1,3 +1,4 @@
+import * as history from './history';
 import * as macro from './macro';
 import * as store from './macro_store';
 
@@ -6,6 +7,9 @@ const INPUT_ID = 'macroll-input';
 const CHAT = document.getElementById('textchat-input')!;
 const CHAT_INPUT = CHAT.getElementsByTagName('textarea')![0]!;
 const CHAT_SUBMIT = CHAT.getElementsByTagName('button')![0]!;
+
+let historyIndex = 0;
+history.initialize([] as string[]);
 
 document.addEventListener('keydown', event => {
     if (event.altKey &&
@@ -18,17 +22,46 @@ document.addEventListener('keydown', event => {
     }
 });
 
+function removeInputElement(input: HTMLInputElement): void {
+    historyIndex = 0;
+    input.remove();
+}
+
+function navigateHistory(input: HTMLInputElement, newIndex: number | null): void {
+    if (newIndex !== null) {
+        historyIndex = newIndex;
+        input.value = history.get(historyIndex);
+    }
+}
+
 function createInputElement(): HTMLInputElement {
     const input = document.createElement('input');
     input.id = INPUT_ID;
     input.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-            runMacro(input.value);
-            input.remove();
+        switch (event.key) {
+            case 'Enter': {
+                const macroInput = input.value;
+                runMacro(macroInput);
+                history.add(macroInput);
+                history.updateCurrent('');
+                removeInputElement(input);
+                break;
+            }
+            case 'ArrowUp':
+                navigateHistory(input, history.previous(historyIndex));
+                break;
+            case 'ArrowDown':
+                navigateHistory(input, history.next(historyIndex));
+                break;
+        }
+    });
+    input.addEventListener('change', () => {
+        if (historyIndex === 0) {
+            history.updateCurrent(input.value);
         }
     });
     input.addEventListener('blur', () => {
-        input.remove();
+        removeInputElement(input);
     });
     return input;
 }
