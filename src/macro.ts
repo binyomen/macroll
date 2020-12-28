@@ -86,11 +86,6 @@ export interface ITemplate {
 
 export type MacroCommand = string | ITemplate;
 
-export interface IMacroResult {
-    commands: MacroCommand[];
-    onComplete?: (elt: HTMLElement) => IMacroResult | null;
-}
-
 export function parseMacro(macroString: string): IMacroCall {
     const parseResult =
         // eslint-disable-next-line max-len

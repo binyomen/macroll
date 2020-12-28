@@ -1,8 +1,7 @@
-import type {IMacroResult} from './macro';
 import dnd from './builtins/dnd';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-type-alias
-type MacroFunction = (...args: any[]) => IMacroResult;
+type MacroFunction = (...args: any[]) => Promise<void>;
 
 export interface IMacroStore {
     readonly get: (name: string) => MacroFunction;

@@ -49,7 +49,7 @@ module.exports = {
         '@typescript-eslint/no-use-before-define': ['error', 'nofunc'],
 
         'space-before-function-paren': 'off',
-        '@typescript-eslint/space-before-function-paren': ['error', 'never'],
+        '@typescript-eslint/space-before-function-paren': ['error', {anonymous: 'never', named: 'never', asyncArrow: 'always'}],
 
         'comma-dangle': 'off',
         '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],

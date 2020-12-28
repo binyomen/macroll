@@ -1,13 +1,14 @@
-import type {IMacroResult, IRollSet, MacroArg} from '../macro';
+import * as macroll from '../macroll';
+import type {IRollSet, MacroArg} from '../macro';
 
 export default {
-    attack: (
+    attack: async (
         name: string,
         atk: IRollSet,
         dmg: IRollSet,
         advantage: string = 'norm',
         charname: string = '',
-    ): IMacroResult => {
+    ): Promise<void> => {
         const fields: Record<string, MacroArg> = {
             attack: 1,
             damage: 1,
@@ -32,23 +33,13 @@ export default {
             fields.charname = charname;
         }
 
-        return {
-            commands: [
-                {
-                    name: 'atkdmg',
-                    fields,
-                },
-            ],
-            onComplete: (elt: HTMLElement): IMacroResult | null => {
-                const damageElts = elt.querySelectorAll('.sheet-damage .inlinerollresult');
-                const damage = Array.from(damageElts)
-                    .map(e => (e as HTMLElement).innerText)
-                    .map(s => Number.parseInt(s, 10))
-                    .reduce((acc, v) => acc + v);
-                return {
-                    commands: [`Total damage: ${damage}`],
-                };
-            },
-        };
+        const newMessage = await macroll.sendCommand({name: 'atkdmg', fields});
+
+        const damageElts = newMessage.querySelectorAll('.sheet-damage .inlinerollresult');
+        const damage = Array.from(damageElts)
+            .map(e => (e as HTMLElement).innerText)
+            .map(s => Number.parseInt(s, 10))
+            .reduce((acc, v) => acc + v);
+        await macroll.sendCommand(`Total damage: ${damage}`);
     },
 };

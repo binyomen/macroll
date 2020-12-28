@@ -4,10 +4,6 @@ import * as store from './macro_store';
 
 const INPUT_ID = 'macroll-input';
 
-const CHAT = document.getElementById('textchat-input')!;
-const CHAT_INPUT = CHAT.getElementsByTagName('textarea')![0]!;
-const CHAT_SUBMIT = CHAT.getElementsByTagName('button')![0]!;
-
 let historyIndex = 0;
 history.initialize([] as string[]);
 
@@ -41,11 +37,12 @@ function navigateHistory(input: HTMLInputElement, newIndex: number | null): void
 function createInputElement(): HTMLInputElement {
     const input = document.createElement('input');
     input.id = INPUT_ID;
-    input.addEventListener('keydown', event => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    input.addEventListener('keydown', async event => {
         switch (event.key) {
             case 'Enter': {
                 const macroInput = input.value;
-                runMacro(macroInput);
+                await runMacro(macroInput);
                 history.add(macroInput);
                 removeInputElement(input);
                 break;
@@ -69,66 +66,9 @@ function createInputElement(): HTMLInputElement {
     return input;
 }
 
-function runMacro(macroText: string): void {
-    const lastMessageId = getLastMessageId();
-
+async function runMacro(macroText: string): Promise<void> {
     const parsed = macro.parseMacro(macroText);
     const func = new store.MacroStore().get(parsed.name);
-    const result = func(...parsed.args);
 
-    sendMessage(result);
-
-    function executeOnComplete(): void {
-        const newLastMessage = getLastMessage();
-        if (newLastMessage === null || newLastMessage.dataset.messageid === lastMessageId) {
-            setTimeout(executeOnComplete, 100 /* 100ms */);
-        } else {
-            const newResult = result.onComplete!(newLastMessage);
-            if (newResult !== null) {
-                sendMessage(newResult);
-            }
-        }
-    }
-    if ('onComplete' in result) {
-        setTimeout(executeOnComplete, 100 /* 100ms */);
-    }
-}
-
-function sendMessage(result: macro.IMacroResult): void {
-    const message = toRoll20Syntax(result);
-
-    // For some reason there's an invisible newline in an empty chat box.
-    const oldText = CHAT_INPUT.value.trim();
-    CHAT_INPUT.value = message;
-    CHAT_SUBMIT.click();
-    CHAT_INPUT.value = oldText;
-}
-
-function toRoll20Syntax(result: macro.IMacroResult): string {
-    const lines = [];
-    for (const command of result.commands) {
-        if (typeof command === 'string') {
-            lines.push(command);
-        } else {
-            let template = `&{template:${command.name}} `;
-            for (const [key, value] of Object.entries(command.fields)) {
-                template += `{{${key}=${value}}} `;
-            }
-            lines.push(template);
-        }
-    }
-    return lines.join('\n');
-}
-
-function getLastMessage(): HTMLElement | null {
-    return document.querySelector('#textchat .content .message:last-child');
-}
-
-function getLastMessageId(): string {
-    const msg = getLastMessage();
-    if (msg === null) {
-        return '';
-    } else {
-        return msg.dataset.messageid!;
-    }
+    await func(...parsed.args);
 }
