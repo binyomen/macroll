@@ -16,6 +16,8 @@ export default {
             r2: atk,
             dmg1: dmg,
             dmg1flag: 1,
+            crit: 1,
+            crit1: dmg,
         };
 
         if (advantage === 'adv') {
