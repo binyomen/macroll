@@ -40,9 +40,13 @@ export default {
                 },
             ],
             onComplete: (elt: HTMLElement): IMacroResult | null => {
-                console.log(elt);
+                const damageElts = elt.querySelectorAll('.sheet-damage .inlinerollresult');
+                const damage = Array.from(damageElts)
+                    .map(e => (e as HTMLElement).innerText)
+                    .map(s => Number.parseInt(s, 10))
+                    .reduce((acc, v) => acc + v);
                 return {
-                    commands: ['it worked!', 'Whoo!'],
+                    commands: [`Total damage: ${damage}`],
                 };
             },
         };

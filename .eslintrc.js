@@ -39,6 +39,8 @@ module.exports = {
         'array-element-newline': ['error', 'consistent'],
         'no-inline-comments': 'off',
         'default-case': 'off',
+        'dot-location': ['error', 'property'],
+        'max-lines-per-function': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],

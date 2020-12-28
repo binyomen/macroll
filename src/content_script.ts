@@ -96,7 +96,6 @@ function runMacro(macroText: string): void {
 
 function sendMessage(result: macro.IMacroResult): void {
     const message = toRoll20Syntax(result);
-    console.log(message);
 
     // For some reason there's an invisible newline in an empty chat box.
     const oldText = CHAT_INPUT.value.trim();
