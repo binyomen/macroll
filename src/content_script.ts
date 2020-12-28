@@ -31,6 +31,9 @@ function navigateHistory(input: HTMLInputElement, newIndex: number | null): void
     if (newIndex !== null) {
         historyIndex = newIndex;
         input.value = history.get(historyIndex);
+        setTimeout((): void => {
+            input.setSelectionRange(input.value.length, input.value.length);
+        }, 1);
     }
 }
 
