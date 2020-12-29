@@ -72,5 +72,8 @@ async function runMacro(macroText: string): Promise<void> {
     const parsed = macro.parseMacro(macroText);
     const func = store.get(parsed.name);
 
+    const runMacroEvent = new CustomEvent('macroll-run-macro', {detail: parsed});
+    document.body.dispatchEvent(runMacroEvent);
+
     await func(...parsed.args);
 }

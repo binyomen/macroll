@@ -2,6 +2,10 @@ const CHAT = document.getElementById('textchat-input');
 const CHAT_INPUT = CHAT.getElementsByTagName('textarea')[0];
 const CHAT_SUBMIT = CHAT.getElementsByTagName('button')[0];
 
+document.body.addEventListener('macroll-run-macro', e => {
+    console.log(e.detail);
+});
+
 export function fromModuleName(moduleName) {
     return {
         sendCommand: sendCommandFactory(moduleName),
