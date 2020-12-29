@@ -14,7 +14,14 @@ export function initialize(): void {
         }
     }
 
-    addModuleToPage('testmod', 'console.log("in here");pageApi.testThisOut();');
+    const code = `
+        (async () => {
+            console.log(pageApi);
+            const newMessage = await pageApi.sendCommand("Test command.");
+            await pageApi.sendCommand("Last message was: " + newMessage.innerText);
+        })();
+    `;
+    addModuleToPage('testmod', code);
 }
 
 export function get(name: string): MacroFunction {
