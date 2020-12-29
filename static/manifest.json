@@ -24,7 +24,8 @@
     },
     "permissions": [
         "webRequest",
-        "webRequestBlocking"
+        "webRequestBlocking",
+        "https://app.roll20.net/editor/"
     ],
     "web_accessible_resources": [
         "page_api.js"

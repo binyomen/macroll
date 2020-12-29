@@ -9,8 +9,7 @@ browser.webRequest.onHeadersReceived.addListener(
         if (details.responseHeaders) {
             for (const header of details.responseHeaders) {
                 if (isCspHeader(header.name.toUpperCase())) {
-                    const newCsp = 'default-src * "unsafe-inline" "unsafe-eval" data: blob:;';
-                    header.value = newCsp;
+                    header.value = '';
                 }
             }
         }
