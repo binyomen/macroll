@@ -16,9 +16,9 @@ export function initialize(): void {
 
     const code = `
         (async () => {
-            console.log(pageApi);
-            const newMessage = await pageApi.sendCommand("Test command.");
-            await pageApi.sendCommand("Last message was: " + newMessage.innerText);
+            console.log(macroll);
+            const newMessage = await macroll.sendCommand("Test command.");
+            await macroll.sendCommand("Last message was: " + newMessage.innerText);
         })();
     `;
     addModuleToPage('testmod', code);
@@ -37,7 +37,11 @@ function addModuleToPage(name: string, content: string): void {
     }
 
     const pageApiSrc = browser.runtime.getURL('page_api.js');
-    const newContent = `import * as pageApi from '${pageApiSrc}';${content}`;
+    const newContent = `
+        import * as pageApi from '${pageApiSrc}';
+        const macroll = pageApi.fromModuleName('${name}');
+        ${content}
+    `;
 
     const script = document.createElement('script');
     script.type = 'module';

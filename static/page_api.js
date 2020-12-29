@@ -2,21 +2,29 @@ const CHAT = document.getElementById('textchat-input');
 const CHAT_INPUT = CHAT.getElementsByTagName('textarea')[0];
 const CHAT_SUBMIT = CHAT.getElementsByTagName('button')[0];
 
-export async function sendCommand(command) {
-    return new Promise(resolve => {
-        const lastMessageId = getLastMessageId();
-        sendMessage(command);
+export function fromModuleName(moduleName) {
+    return {
+        sendCommand: sendCommandFactory(moduleName),
+    };
+}
 
-        function executeOnComplete() {
-            const newLastMessage = getLastMessage();
-            if (newLastMessage === null || newLastMessage.dataset.messageid === lastMessageId) {
-                setTimeout(executeOnComplete, 100 /* 100ms */);
-            } else {
-                resolve(newLastMessage);
+function sendCommandFactory(moduleName) {
+    return async (command) => {
+        return new Promise(resolve => {
+            const lastMessageId = getLastMessageId();
+            sendMessage(command);
+
+            function executeOnComplete() {
+                const newLastMessage = getLastMessage();
+                if (newLastMessage === null || newLastMessage.dataset.messageid === lastMessageId) {
+                    setTimeout(executeOnComplete, 100 /* 100ms */);
+                } else {
+                    resolve(newLastMessage);
+                }
             }
-        }
-        setTimeout(executeOnComplete, 100 /* 100ms */);
-    });
+            setTimeout(executeOnComplete, 100 /* 100ms */);
+        });
+    }
 }
 
 function sendMessage(command) {
