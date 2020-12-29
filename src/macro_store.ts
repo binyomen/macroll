@@ -8,17 +8,19 @@ export interface IMacroStore {
 }
 
 export class MacroStore implements IMacroStore {
-    private readonly macros: Record<string, MacroFunction> = {};
+    private readonly macros: Record<string, Record<string, MacroFunction>> = {};
 
     public constructor() {
+        this.macros.dnd = {};
         for (const name in dnd) {
             if (Object.prototype.hasOwnProperty.call(dnd, name)) {
-                this.macros[name] = (dnd as Record<string, MacroFunction>)[name]!;
+                this.macros.dnd[name] = (dnd as Record<string, MacroFunction>)[name]!;
             }
         }
     }
 
     public get(name: string): MacroFunction {
-        return this.macros[name]!;
+        const [mod, macro] = name.split('.', 2);
+        return this.macros[mod!]![macro!]!;
     }
 }

@@ -2,7 +2,7 @@ import * as macroll from '../macroll';
 import type {IRollSet, MacroArg} from '../macro';
 
 export default {
-    attack: async (
+    atk: async (
         name: string,
         atk: IRollSet,
         dmg: IRollSet,
