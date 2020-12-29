@@ -7,6 +7,8 @@ const INPUT_ID = 'macroll-input';
 let historyIndex = 0;
 history.initialize([] as string[]);
 
+store.initialize();
+
 document.addEventListener('keydown', event => {
     if (event.altKey &&
             event.shiftKey &&
@@ -68,7 +70,7 @@ function createInputElement(): HTMLInputElement {
 
 async function runMacro(macroText: string): Promise<void> {
     const parsed = macro.parseMacro(macroText);
-    const func = new store.MacroStore().get(parsed.name);
+    const func = store.get(parsed.name);
 
     await func(...parsed.args);
 }
