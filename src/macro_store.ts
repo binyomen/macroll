@@ -1,3 +1,4 @@
+import {browser} from 'webextension-polyfill-ts';
 import dnd from './builtins/dnd';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-type-alias
@@ -13,7 +14,7 @@ export function initialize(): void {
         }
     }
 
-    addModuleToPage('testmod', 'console.log("hey, this works!");');
+    addModuleToPage('testmod', 'pageApi.testThisOut();');
 }
 
 export function get(name: string): MacroFunction {
@@ -29,10 +30,13 @@ function addModuleToPage(name: string, content: string): void {
         existingScript.remove();
     }
 
+    const pageApiSrc = browser.runtime.getURL('page_api.js');
+    const newContent = `import * as pageApi from '${pageApiSrc}';${content}`;
+
     const script = document.createElement('script');
     script.type = 'module';
     script.id = id;
     // We need to use blob storage to get around content security policies.
-    script.src = URL.createObjectURL(new Blob([content], {type: 'application/javascript'}));
+    script.src = URL.createObjectURL(new Blob([newContent], {type: 'application/javascript'}));
     document.head.appendChild(script);
 }
