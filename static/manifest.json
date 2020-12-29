@@ -17,6 +17,16 @@
             "css": ["style.css"]
         }
     ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
     "permissions": [
+        "webRequest",
+        "webRequestBlocking"
+    ],
+    "web_accessible_resources": [
+        "page_api.js"
     ]
 }

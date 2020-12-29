@@ -14,7 +14,7 @@ export function initialize(): void {
         }
     }
 
-    addModuleToPage('testmod', 'pageApi.testThisOut();');
+    addModuleToPage('testmod', 'console.log("in here");pageApi.testThisOut();');
 }
 
 export function get(name: string): MacroFunction {
@@ -26,7 +26,6 @@ function addModuleToPage(name: string, content: string): void {
     const id = `macroll-module-${name}`;
     const existingScript = document.getElementById(id) as HTMLScriptElement | null;
     if (existingScript !== null) {
-        URL.revokeObjectURL(existingScript.src);
         existingScript.remove();
     }
 
@@ -36,7 +35,6 @@ function addModuleToPage(name: string, content: string): void {
     const script = document.createElement('script');
     script.type = 'module';
     script.id = id;
-    // We need to use blob storage to get around content security policies.
-    script.src = URL.createObjectURL(new Blob([newContent], {type: 'application/javascript'}));
+    script.innerText = newContent;
     document.head.appendChild(script);
 }
