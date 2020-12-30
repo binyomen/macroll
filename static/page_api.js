@@ -50,7 +50,12 @@ function sendMessage(command) {
     const oldText = CHAT_INPUT.value.trim();
     CHAT_INPUT.value = message;
     CHAT_SUBMIT.click();
-    CHAT_INPUT.value = oldText;
+
+    // We reset the value in the next event loop because if we don't, the value
+    // gets changed to a single newline for some reason.
+    setTimeout(() => {
+        CHAT_INPUT.value = oldText;
+    }, 1);
 }
 
 function toRoll20Syntax(command) {
