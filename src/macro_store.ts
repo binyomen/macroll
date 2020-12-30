@@ -4,15 +4,6 @@ export async function initialize(): Promise<void> {
     const dndResponse = await fetch(browser.runtime.getURL('builtins/dnd.js'));
     const dndCode = await dndResponse.text();
     addModuleToPage('dnd', dndCode);
-
-    const code = `
-        macroll.registerMacro('testmac', async (name, roll) => {
-            console.log('name: ' + name + ', roll: ' + JSON.stringify(roll));
-            const newMessage = await macroll.sendCommand('Test command.');
-            await macroll.sendCommand('Last message was: ' + newMessage.innerText);
-        });
-    `;
-    addModuleToPage('testmod', code);
 }
 
 function addModuleToPage(name: string, content: string): void {
