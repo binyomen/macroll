@@ -23,15 +23,13 @@ function addModuleToPage(name: string, content: string): void {
     }
 
     const pageApiSrc = browser.runtime.getURL('page_api.js');
-    const newContent = `
-        import * as pageApi from '${pageApiSrc}';
-        const macroll = pageApi.fromModuleName('${name}');
-        ${content}
-    `;
+    const newContent = `import * as pageApi from '${pageApiSrc}';
+const macroll = pageApi.fromModuleName('${name}');
+${content}`;
 
     const script = document.createElement('script');
     script.type = 'module';
     script.id = id;
-    script.innerText = newContent;
+    script.text = newContent;
     document.head.appendChild(script);
 }
