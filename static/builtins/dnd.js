@@ -1,15 +1,6 @@
-import * as macroll from '../macroll';
-import type {IRollSet, MacroArg} from '../macro';
-
-export default {
-    atk: async (
-        name: string,
-        atk: IRollSet,
-        dmg: IRollSet,
-        advantage: string = 'norm',
-        charname: string = '',
-    ): Promise<void> => {
-        const fields: Record<string, MacroArg> = {
+macroll.registerMacro('atk',
+    async (name, atk, dmg, advantage = 'norm', charname = '') => {
+        const fields = {
             attack: 1,
             damage: 1,
             rname: name,
@@ -37,9 +28,9 @@ export default {
 
         const damageElts = newMessage.querySelectorAll('.sheet-damage .inlinerollresult');
         const damage = Array.from(damageElts)
-            .map(e => (e as HTMLElement).innerText)
+            .map(e => e.innerText)
             .map(s => Number.parseInt(s, 10))
             .reduce((acc, v) => acc + v);
         await macroll.sendCommand(`Total damage: ${damage}`);
-    },
-};
+    }
+);

@@ -59,10 +59,43 @@ function toRoll20Syntax(command) {
     } else {
         let template = `&{template:${command.name}} `;
         for (const [key, value] of Object.entries(command.fields)) {
-            template += `{{${key}=${value}}} `;
+            const valueString = (() => {
+                if (typeof value === 'object') {
+                    return rollSetToString(value);
+                } else {
+                    return value.toString();
+                }
+            })();
+            template += `{{${key}=${valueString}}} `;
         }
         return template;
     }
+}
+
+function rollSetToString(rollSet) {
+    if (rollSet.rolls.length === 0) {
+        return `[[${rollSet.modifier}]]`;
+    } else {
+        let rollString = `[[${rollToString(rollSet.rolls[0])}`;
+
+        for (const roll of rollSet.rolls.slice(1)) {
+            const op = roll.operator === 'Operator.Plus' ? '+' : '-';
+            rollString += ` ${op} ${rollToString(roll)}`;
+        }
+
+        if (rollSet.modifier < 0) {
+            rollString += ` - ${Math.abs(rollSet.modifier)}`;
+        } else {
+            rollString += ` + ${rollSet.modifier}`;
+        }
+
+        rollString += ']]';
+        return rollString;
+    }
+}
+
+function rollToString(roll) {
+    return `${roll.numDice}d${roll.dieValue}`;
 }
 
 function getLastMessage() {

@@ -1,18 +1,9 @@
 import {browser} from 'webextension-polyfill-ts';
-import dnd from './builtins/dnd';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-type-alias
-type MacroFunction = (...args: any[]) => Promise<void>;
-
-const macros: Record<string, Record<string, MacroFunction>> = {};
-
-export function initialize(): void {
-    macros.dnd = {};
-    for (const name in dnd) {
-        if (Object.prototype.hasOwnProperty.call(dnd, name)) {
-            macros.dnd[name] = (dnd as Record<string, MacroFunction>)[name]!;
-        }
-    }
+export async function initialize(): Promise<void> {
+    const dndResponse = await fetch(browser.runtime.getURL('builtins/dnd.js'));
+    const dndCode = await dndResponse.text();
+    addModuleToPage('dnd', dndCode);
 
     const code = `
         macroll.registerMacro('testmac', async (name, roll) => {
@@ -22,11 +13,6 @@ export function initialize(): void {
         });
     `;
     addModuleToPage('testmod', code);
-}
-
-export function get(name: string): MacroFunction {
-    const [mod, macro] = name.split('.', 2);
-    return macros[mod!]![macro!]!;
 }
 
 function addModuleToPage(name: string, content: string): void {

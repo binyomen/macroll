@@ -7,7 +7,9 @@ const INPUT_ID = 'macroll-input';
 let historyIndex = 0;
 history.initialize([] as string[]);
 
-store.initialize();
+store.initialize().catch(e => {
+    console.log(e);
+});
 
 document.addEventListener('keydown', event => {
     if (event.altKey &&

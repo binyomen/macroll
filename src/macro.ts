@@ -32,10 +32,6 @@ export class Roll implements IRoll {
         this.dieValue = dieValue;
         this.operator = operator;
     }
-
-    public toString(): string {
-        return `${this.numDice}d${this.dieValue}`;
-    }
 }
 
 export class RollSet implements IRollSet {
@@ -45,30 +41,6 @@ export class RollSet implements IRollSet {
     public constructor(rolls: IRoll[], modifier: number) {
         this.rolls = rolls;
         this.modifier = modifier;
-    }
-
-    public toString(): string {
-        if (this.rolls.length === 0) {
-            return `[[${this.modifier}]]`;
-        } else {
-            let rollString = `[[${this.rolls[0]}`;
-
-            for (const roll of this.rolls.slice(1)) {
-                const op = roll.operator === Operator.Plus ?
-                    '+' :
-                    '-';
-                rollString += ` ${op} ${roll}`;
-            }
-
-            if (this.modifier < 0) {
-                rollString += ` - ${Math.abs(this.modifier)}`;
-            } else {
-                rollString += ` + ${this.modifier}`;
-            }
-
-            rollString += ']]';
-            return rollString;
-        }
     }
 }
 

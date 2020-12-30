@@ -1,6 +1,6 @@
 import {suite, test} from '@testdeck/mocha';
 import * as chai from 'chai';
-import {parseMacro, parseArg, Operator, IRoll, Roll, IRollSet, RollSet} from '../src/macro.ts';
+import {parseMacro, parseArg, Operator, IRoll, Roll, IRollSet, RollSet} from '../src/macro';
 
 chai.should();
 
@@ -12,23 +12,6 @@ function rs(rolls: IRoll[], modifier: number) {
 }
 const PLUS = Operator.Plus;
 const MINUS = Operator.Minus;
-
-@suite class RollSetTests {
-    @test 'should have proper string form'() {
-        r(1, 6, PLUS).toString().should.equal('1d6');
-        r(1, 6, MINUS).toString().should.equal('1d6');
-        r(3, 6, PLUS).toString().should.equal('3d6');
-        r(3, 6, MINUS).toString().should.equal('3d6');
-
-        rs([], 0).toString().should.equal('[[0]]');
-        rs([], 5).toString().should.equal('[[5]]');
-        rs([], -5).toString().should.equal('[[-5]]');
-
-        rs([r(3, 20, PLUS)], 0).toString().should.equal('[[3d20 + 0]]');
-        rs([r(3, 20, PLUS), r(1, 6, PLUS)], -8).toString().should.equal('[[3d20 + 1d6 - 8]]');
-        rs([r(3, 20, PLUS), r(1, 6, MINUS)], -8).toString().should.equal('[[3d20 - 1d6 - 8]]');
-    }
-}
 
 @suite class ParseMacroTests {
     @test 'should parse argumentless macro'() {
