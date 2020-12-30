@@ -40,11 +40,11 @@ function createInputElement(): HTMLInputElement {
     const input = document.createElement('input');
     input.id = INPUT_ID;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    input.addEventListener('keydown', async event => {
+    input.addEventListener('keydown', event => {
         switch (event.key) {
             case 'Enter': {
                 const macroInput = input.value;
-                await runMacro(macroInput);
+                runMacro(macroInput);
                 history.add(macroInput);
                 removeInputElement(input);
                 break;
@@ -68,12 +68,9 @@ function createInputElement(): HTMLInputElement {
     return input;
 }
 
-async function runMacro(macroText: string): Promise<void> {
+function runMacro(macroText: string): void {
     const parsed = macro.parseMacro(macroText);
-    const func = store.get(parsed.name);
-
-    const runMacroEvent = new CustomEvent('macroll-run-macro', {detail: parsed});
+    const runMacroEvent =
+        new CustomEvent('macroll-run-macro', {detail: JSON.stringify(parsed)});
     document.body.dispatchEvent(runMacroEvent);
-
-    await func(...parsed.args);
 }

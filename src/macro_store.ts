@@ -15,11 +15,11 @@ export function initialize(): void {
     }
 
     const code = `
-        (async () => {
-            console.log(macroll);
-            const newMessage = await macroll.sendCommand("Test command.");
-            await macroll.sendCommand("Last message was: " + newMessage.innerText);
-        })();
+        macroll.registerMacro('testmac', async (name, roll) => {
+            console.log('name: ' + name + ', roll: ' + JSON.stringify(roll));
+            const newMessage = await macroll.sendCommand('Test command.');
+            await macroll.sendCommand('Last message was: ' + newMessage.innerText);
+        });
     `;
     addModuleToPage('testmod', code);
 }

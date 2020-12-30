@@ -2,13 +2,25 @@ const CHAT = document.getElementById('textchat-input');
 const CHAT_INPUT = CHAT.getElementsByTagName('textarea')[0];
 const CHAT_SUBMIT = CHAT.getElementsByTagName('button')[0];
 
-document.body.addEventListener('macroll-run-macro', e => {
-    console.log(e.detail);
+const modules = {};
+
+document.body.addEventListener('macroll-run-macro', async e => {
+    const macroCall = JSON.parse(e.detail);
+    const [mod, macro] = macroCall.name.split('.', 2);
+    await modules[mod][macro](...macroCall.args);
 });
 
 export function fromModuleName(moduleName) {
+    modules[moduleName] = {};
     return {
+        registerMacro: registerMacroFactory(moduleName),
         sendCommand: sendCommandFactory(moduleName),
+    };
+}
+
+function registerMacroFactory(moduleName) {
+    return (macroName, macro) => {
+        modules[moduleName][macroName] = macro;
     };
 }
 
@@ -28,7 +40,7 @@ function sendCommandFactory(moduleName) {
             }
             setTimeout(executeOnComplete, 100 /* 100ms */);
         });
-    }
+    };
 }
 
 function sendMessage(command) {
