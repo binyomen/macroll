@@ -25,6 +25,16 @@ function getModules(): Record<string, string> {
 
 function createModuleElement(moduleName: string): HTMLLIElement {
     const li = document.createElement('li');
-    li.innerText = moduleName;
+
+    li.appendChild(document.createTextNode(moduleName));
+
+    const editButton = document.createElement('button');
+    editButton.innerText = 'E';
+    li.appendChild(editButton);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = 'X';
+    li.appendChild(deleteButton);
+
     return li;
 }
