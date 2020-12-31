@@ -5,12 +5,15 @@ import * as store from './macro_store';
 const INPUT_ID = 'macroll-input';
 
 let historyIndex = 0;
-history.initialize([] as string[]);
+history.initialize([] as string[]).catch(e => {
+    console.log(e);
+});
 
 store.initialize().catch(e => {
     console.log(e);
 });
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 document.addEventListener('keydown', event => {
     if (event.altKey &&
             event.shiftKey &&
@@ -28,10 +31,10 @@ function removeInputElement(input: HTMLInputElement): void {
     input.remove();
 }
 
-function navigateHistory(input: HTMLInputElement, newIndex: number | null): void {
+async function navigateHistory(input: HTMLInputElement, newIndex: number | null): Promise<void> {
     if (newIndex !== null) {
         historyIndex = newIndex;
-        input.value = history.get(historyIndex);
+        input.value = await history.get(historyIndex);
         setTimeout((): void => {
             input.setSelectionRange(input.value.length, input.value.length);
         }, 1);
@@ -42,20 +45,20 @@ function createInputElement(): HTMLInputElement {
     const input = document.createElement('input');
     input.id = INPUT_ID;
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    input.addEventListener('keydown', event => {
+    input.addEventListener('keydown', async event => {
         switch (event.key) {
             case 'Enter': {
                 const macroInput = input.value;
                 runMacro(macroInput);
-                history.add(macroInput);
+                await history.add(macroInput);
                 removeInputElement(input);
                 break;
             }
             case 'ArrowUp':
-                navigateHistory(input, history.previous(historyIndex));
+                await navigateHistory(input, await history.previous(historyIndex));
                 break;
             case 'ArrowDown':
-                navigateHistory(input, history.next(historyIndex));
+                await navigateHistory(input, await history.next(historyIndex));
                 break;
         }
     });

@@ -7,45 +7,47 @@ interface IHistoryBackend {
     readonly push: (s: string) => void;
 }
 
-export function initialize(initBackend: IHistoryBackend): void {
+export async function initialize(initBackend: IHistoryBackend): Promise<void> {
     backend = initBackend;
     currentLine = '';
+    return Promise.resolve();
 }
 
 export function updateCurrent(line: string): void {
     currentLine = line;
 }
 
-export function add(line: string): void {
+export async function add(line: string): Promise<void> {
     if (line !== backend[backend.length - 1]) {
         backend.push(line);
     }
+    return Promise.resolve();
 }
 
-export function get(index: number): string {
+export async function get(index: number): Promise<string> {
     if (index === 0) {
-        return currentLine;
+        return Promise.resolve(currentLine);
     } else {
         const internalIndex = indexToInternal(index);
-        return backend[internalIndex]!;
+        return Promise.resolve(backend[internalIndex]!);
     }
 }
 
-export function previous(index: number): number | null {
+export async function previous(index: number): Promise<number | null> {
     const internalIndex = indexToInternal(index);
     if (internalIndex <= 0 || internalIndex > backend.length) {
-        return null;
+        return Promise.resolve(null);
     } else {
-        return index + 1;
+        return Promise.resolve(index + 1);
     }
 }
 
-export function next(index: number): number | null {
+export async function next(index: number): Promise<number | null> {
     const internalIndex = indexToInternal(index);
     if (internalIndex < 0 || internalIndex >= backend.length) {
-        return null;
+        return Promise.resolve(null);
     } else {
-        return index - 1;
+        return Promise.resolve(index - 1);
     }
 }
 
