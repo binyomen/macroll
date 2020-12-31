@@ -1,0 +1,21 @@
+ul {
+    --li-border: 1px solid black;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    border-top: var(--li-border);
+    border-left: var(--li-border);
+    border-right: var(--li-border);
+    padding: 0.5em;
+}
+
+li:last-child {
+    border-bottom: var(--li-border);
+}
+
+li > button {
+    margin-left: 0.3em;
+}
