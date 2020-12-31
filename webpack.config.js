@@ -10,6 +10,7 @@ module.exports = {
     entry: {
         content_script: path.join(__dirname, srcDir + 'content_script.ts'),
         background: path.join(__dirname, srcDir + 'background.ts'),
+        popup: path.join(__dirname, srcDir + 'popup.ts'),
     },
     output: {
         path: path.join(__dirname, 'dist'),

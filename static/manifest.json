@@ -3,13 +3,11 @@
     "name": "macroll",
     "description": "Ultra-customizable macros for roll20.net",
     "version": "0.1.1",
-
     "browser_specific_settings": {
         "gecko": {
             "id": "{d09a7b68-da6a-47f8-8eee-b4e6ce8ca2ea}"
         }
     },
-
     "content_scripts": [
         {
             "matches": ["https://app.roll20.net/editor/"],
@@ -29,5 +27,9 @@
     ],
     "web_accessible_resources": [
         "page_api.js"
-    ]
+    ],
+    "browser_action": {
+        "default_title": "macroll",
+        "default_popup": "popup.html"
+    }
 }
