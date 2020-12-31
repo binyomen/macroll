@@ -11,6 +11,7 @@ module.exports = {
         content_script: path.join(__dirname, srcDir + 'content_script.ts'),
         background: path.join(__dirname, srcDir + 'background.ts'),
         popup: path.join(__dirname, srcDir + 'popup.ts'),
+        edit: path.join(__dirname, srcDir + 'edit.ts'),
     },
     output: {
         path: path.join(__dirname, 'dist'),

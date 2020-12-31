@@ -1,10 +1,10 @@
-ul {
+ul#module-list{
     --li-border: 1px solid black;
     margin: 0;
     padding: 0;
 }
 
-li {
+#module-list > li {
     list-style: none;
     border-top: var(--li-border);
     border-left: var(--li-border);
@@ -12,10 +12,10 @@ li {
     padding: 0.5em;
 }
 
-li:last-child {
+#module-list > li:last-child {
     border-bottom: var(--li-border);
 }
 
-li > button {
+#module-list > li > button {
     margin-left: 0.3em;
 }

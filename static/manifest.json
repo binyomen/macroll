@@ -24,7 +24,8 @@
         "webRequest",
         "webRequestBlocking",
         "https://app.roll20.net/editor/",
-        "storage"
+        "storage",
+        "tabs"
     ],
     "web_accessible_resources": [
         "page_api.js",
