@@ -4,10 +4,30 @@ import * as history from '../src/history.ts';
 
 const should = chai.should();
 
+class AsyncArray implements history.IHistoryBackend {
+    private readonly arr: string[];
+    public constructor(arr: string[]) {
+        this.arr = arr;
+    }
+
+    public async get(i: number): Promise<string | undefined> {
+        return Promise.resolve(this.arr[i]);
+    }
+
+    public async length(): Promise<number> {
+        return Promise.resolve(this.arr.length);
+    }
+
+    public async push(s: string): Promise<void> {
+        this.arr.push(s);
+        return Promise.resolve();
+    }
+}
+
 @suite class HistoryTests {
     @test async 'should start empty'() {
         const historyArray = [];
-        history.initialize(new history.AsyncArray(historyArray));
+        history.initialize(new AsyncArray(historyArray));
 
         history.updateCurrent('current');
 
@@ -19,7 +39,7 @@ const should = chai.should();
 
     @test async 'should handle a single item'() {
         const historyArray = [];
-        history.initialize(new history.AsyncArray(historyArray));
+        history.initialize(new AsyncArray(historyArray));
 
         await history.add('line1');
         history.updateCurrent('current');
@@ -35,7 +55,7 @@ const should = chai.should();
 
     @test async 'should handle many items'() {
         const historyArray = [];
-        history.initialize(new history.AsyncArray(historyArray));
+        history.initialize(new AsyncArray(historyArray));
 
         await history.add('line1');
         await history.add('line2');
@@ -80,7 +100,7 @@ const should = chai.should();
 
     @test async 'should not add repeat items'() {
         const historyArray = [];
-        history.initialize(new history.AsyncArray(historyArray));
+        history.initialize(new AsyncArray(historyArray));
 
         await history.add('line1');
         historyArray.length.should.equal(1);
@@ -97,7 +117,7 @@ const should = chai.should();
 
     @test async 'should not add repeat items after adding one'() {
         const historyArray = [];
-        history.initialize(new history.AsyncArray(historyArray));
+        history.initialize(new AsyncArray(historyArray));
 
         await history.add('line1');
         historyArray.length.should.equal(1);

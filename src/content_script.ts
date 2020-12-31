@@ -5,7 +5,7 @@ import * as store from './macro_store';
 const INPUT_ID = 'macroll-input';
 
 let historyIndex = 0;
-history.initialize(new history.AsyncArray([]));
+history.initialize(new history.SyncStorage());
 
 store.initialize().catch(e => {
     console.log(e);
