@@ -2,15 +2,14 @@ let backend: IHistoryBackend; // eslint-disable-line @typescript-eslint/init-dec
 let currentLine: string; // eslint-disable-line @typescript-eslint/init-declarations
 
 interface IHistoryBackend {
-    [i: number]: string;
-    readonly length: number;
-    readonly push: (s: string) => void;
+    readonly get: (i: number) => Promise<string | undefined>;
+    readonly length: () => Promise<number>;
+    readonly push: (s: string) => Promise<void>;
 }
 
-export async function initialize(initBackend: IHistoryBackend): Promise<void> {
+export function initialize(initBackend: IHistoryBackend): void {
     backend = initBackend;
     currentLine = '';
-    return Promise.resolve();
 }
 
 export function updateCurrent(line: string): void {
@@ -18,39 +17,58 @@ export function updateCurrent(line: string): void {
 }
 
 export async function add(line: string): Promise<void> {
-    if (line !== backend[backend.length - 1]) {
-        backend.push(line);
+    if (line !== await backend.get((await backend.length()) - 1)) {
+        await backend.push(line);
     }
-    return Promise.resolve();
 }
 
 export async function get(index: number): Promise<string> {
     if (index === 0) {
-        return Promise.resolve(currentLine);
+        return currentLine;
     } else {
-        const internalIndex = indexToInternal(index);
-        return Promise.resolve(backend[internalIndex]!);
+        const internalIndex = await indexToInternal(index);
+        return (await backend.get(internalIndex))!;
     }
 }
 
 export async function previous(index: number): Promise<number | null> {
-    const internalIndex = indexToInternal(index);
-    if (internalIndex <= 0 || internalIndex > backend.length) {
-        return Promise.resolve(null);
+    const internalIndex = await indexToInternal(index);
+    if (internalIndex <= 0 || internalIndex > await backend.length()) {
+        return null;
     } else {
-        return Promise.resolve(index + 1);
+        return index + 1;
     }
 }
 
 export async function next(index: number): Promise<number | null> {
-    const internalIndex = indexToInternal(index);
-    if (internalIndex < 0 || internalIndex >= backend.length) {
-        return Promise.resolve(null);
+    const internalIndex = await indexToInternal(index);
+    if (internalIndex < 0 || internalIndex >= await backend.length()) {
+        return null;
     } else {
-        return Promise.resolve(index - 1);
+        return index - 1;
     }
 }
 
-function indexToInternal(index: number): number {
-    return backend.length - 1 - index + 1;
+async function indexToInternal(index: number): Promise<number> {
+    return (await backend.length()) - 1 - index + 1;
+}
+
+export class AsyncArray {
+    private readonly arr: string[];
+    public constructor(arr: string[]) {
+        this.arr = arr;
+    }
+
+    public async get(i: number): Promise<string | undefined> {
+        return Promise.resolve(this.arr[i]);
+    }
+
+    public async length(): Promise<number> {
+        return Promise.resolve(this.arr.length);
+    }
+
+    public async push(s: string): Promise<void> {
+        this.arr.push(s);
+        return Promise.resolve();
+    }
 }

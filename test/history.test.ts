@@ -7,7 +7,7 @@ const should = chai.should();
 @suite class HistoryTests {
     @test async 'should start empty'() {
         const historyArray = [];
-        await history.initialize(historyArray);
+        history.initialize(new history.AsyncArray(historyArray));
 
         history.updateCurrent('current');
 
@@ -19,7 +19,7 @@ const should = chai.should();
 
     @test async 'should handle a single item'() {
         const historyArray = [];
-        await history.initialize(historyArray);
+        history.initialize(new history.AsyncArray(historyArray));
 
         await history.add('line1');
         history.updateCurrent('current');
@@ -35,7 +35,7 @@ const should = chai.should();
 
     @test async 'should handle many items'() {
         const historyArray = [];
-        await history.initialize(historyArray);
+        history.initialize(new history.AsyncArray(historyArray));
 
         await history.add('line1');
         await history.add('line2');
@@ -80,7 +80,7 @@ const should = chai.should();
 
     @test async 'should not add repeat items'() {
         const historyArray = [];
-        await history.initialize(historyArray);
+        history.initialize(new history.AsyncArray(historyArray));
 
         await history.add('line1');
         historyArray.length.should.equal(1);
@@ -97,7 +97,7 @@ const should = chai.should();
 
     @test async 'should not add repeat items after adding one'() {
         const historyArray = [];
-        await history.initialize(historyArray);
+        history.initialize(new history.AsyncArray(historyArray));
 
         await history.add('line1');
         historyArray.length.should.equal(1);
