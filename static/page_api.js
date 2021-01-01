@@ -15,6 +15,7 @@ export function fromModuleName(moduleName) {
     return {
         registerMacro: registerMacroFactory(moduleName),
         sendCommand: sendCommandFactory(moduleName),
+        mod: modules,
     };
 }
 

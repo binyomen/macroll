@@ -4,6 +4,16 @@ export async function initialize(): Promise<void> {
     const dndResponse = await fetch(browser.runtime.getURL('builtins/dnd.js'));
     const dndCode = await dndResponse.text();
     addModuleToPage('dnd', dndCode);
+
+    addModuleToPage('testmod', `
+        macroll.registerMacro('shoot', async () => {
+            const atkRoll = {numDice: 1, dieValue: 20, operator: 'Operator.Plus'};
+            const dmgRoll = {numDice: 2, dieValue: 4, operator: 'Operator.Plus'};
+            const atkSet = {rolls: [atkRoll], modifier: 5};
+            const dmgSet = {rolls: [dmgRoll], modifier: 2};
+            await macroll.mod.dnd.atk('shoot', atkSet, dmgSet);
+        });
+    `);
 }
 
 function addModuleToPage(name: string, content: string): void {
