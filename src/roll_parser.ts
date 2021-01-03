@@ -53,6 +53,8 @@ type Token =
     | NumToken
     | RollToken;
 
+type BasicTokenKind = '[' | ']' | '+' | '-' | '(' | ')' | '*' | '/';
+
 export class Peeker<T> {
     private readonly inner: {next: () => T | null};
     private hasCache: boolean = false;
@@ -91,47 +93,51 @@ export class RollLexer {
         this.str = str;
     }
 
-    public next(): Token {
+    public next(): Token | null {
         this.clearSpaces();
 
-        const result = ((): Token => {
-            switch (this.innerPeek()) {
-                case '[':
-                    return {kind: '['};
-                case ']':
-                    return {kind: ']'};
-                case '(':
-                    return {kind: '('};
-                case ')':
-                    return {kind: ')'};
-                case '+':
-                    return {kind: '+'};
-                case '-':
-                    return {kind: '-'};
-                case '*':
-                    return {kind: '*'};
-                case '/':
-                    return {kind: '/'};
-                case 'd':
-                    this.index += 1;
-                    return {kind: 'roll', numDice: 1, dieValue: this.lexNumber()};
-                default:
-                    if (this.innerPeek() !== null && /\d/u.test(this.innerPeek()!)) {
-                        const num = this.lexNumber();
-                        if (this.innerPeek() !== null && this.innerPeek() === 'd') {
-                            return {kind: 'roll', numDice: num, dieValue: this.lexNumber()};
-                        } else {
-                            return {kind: 'num', value: num};
-                        }
+        if (this.innerPeek() === null) {
+            return null;
+        }
+
+        switch (this.innerPeek()) {
+            case '[':
+                return this.basicToken('[');
+            case ']':
+                return this.basicToken(']');
+            case '(':
+                return this.basicToken('(');
+            case ')':
+                return this.basicToken(')');
+            case '+':
+                return this.basicToken('+');
+            case '-':
+                return this.basicToken('-');
+            case '*':
+                return this.basicToken('*');
+            case '/':
+                return this.basicToken('/');
+            case 'd':
+                this.innerNext();
+                return {kind: 'roll', numDice: 1, dieValue: this.lexNumber()};
+            default:
+                if (this.innerPeek() !== null && /\d/u.test(this.innerPeek()!)) {
+                    const num = this.lexNumber();
+                    if (this.innerPeek() !== null && this.innerPeek() === 'd') {
+                        this.innerNext();
+                        return {kind: 'roll', numDice: num, dieValue: this.lexNumber()};
                     } else {
-                        throw new Error(`Invalid character: ${this.innerPeek()}`);
+                        return {kind: 'num', value: num};
                     }
-            }
-        })();
+                } else {
+                    throw new Error(`Invalid character: ${this.innerPeek()}`);
+                }
+        }
+    }
 
+    private basicToken<T extends BasicTokenKind>(token: T): {kind: BasicTokenKind} {
         this.innerNext();
-
-        return result;
+        return {kind: token};
     }
 
     private read(i: number): string | null {
@@ -159,7 +165,7 @@ export class RollLexer {
 
     private lexNumber(): number {
         if (this.innerPeek() === null || !/\d/u.test(this.innerPeek()!)) {
-            throw new Error(`Number cannot start with '${this.innerPeek()}'.`);
+            throw new Error(`A number cannot start with '${this.innerPeek()}'.`);
         }
 
         const digits = [];

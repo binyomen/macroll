@@ -136,3 +136,81 @@ function makeListIter(l: number[] | null[]): {next: () => number[] | null[]} {
         should.equal(p.next(), null);
     }
 }
+
+function collect<T>(iter: {next: () => T | null}): T[] {
+    const l = [];
+    while (true) {
+        const result = iter.next();
+        if (result === null) {
+            return l;
+        } else {
+            l.push(result);
+        }
+    }
+}
+
+function t(kind: string): {kind: string} {
+    return {kind};
+}
+
+function n(num: number): {kind: string, value: number} {
+    return {kind: 'num', value: num};
+}
+
+function r(numDice: number, dieValue: number): {kind: string, numDice: number, dieValue: number} {
+    return {kind: 'roll', numDice, dieValue};
+}
+
+@suite class RollLexerTests {
+    @test 'should lex an empty string'() {
+        collect(new RollLexer('')).should.deep.equal([]);
+        collect(new RollLexer('       ')).should.deep.equal([]);
+    }
+
+    @test 'should lex brackets'() {
+        collect(new RollLexer('[]][')).should.deep.equal([t('['), t(']'), t(']'), t('[')]);
+        collect(new RollLexer('  [ ]   ]  [ ')).should.deep.equal([t('['), t(']'), t(']'), t('[')]);
+    }
+
+    @test 'should lex parens'() {
+        collect(new RollLexer('())(')).should.deep.equal([t('('), t(')'), t(')'), t('(')]);
+        collect(new RollLexer('  ( )   )  ( ')).should.deep.equal([t('('), t(')'), t(')'), t('(')]);
+    }
+
+    @test 'should lex operators'() {
+        collect(new RollLexer('+-*/')).should.deep.equal([t('+'), t('-'), t('*'), t('/')]);
+        collect(new RollLexer('  + - *    / ')).should.deep.equal([t('+'), t('-'), t('*'), t('/')]);
+    }
+
+    @test 'should lex numbers'() {
+        collect(new RollLexer('5 8 3748 23 0')).should.deep.equal([n(5), n(8), n(3748), n(23), n(0)]);
+        collect(new RollLexer('   5   8  3748   23     0       ')).should.deep.equal([n(5), n(8), n(3748), n(23), n(0)]);
+    }
+
+    @test 'should lex rolls'() {
+        collect(new RollLexer('d3 40d1 d100 7d7')).should.deep.equal([r(1, 3), r(40, 1), r(1, 100), r(7, 7)]);
+        collect(new RollLexer('  d3  40d1     d100  7d7    ')).should.deep.equal([r(1, 3), r(40, 1), r(1, 100), r(7, 7)]);
+
+        collect(new RollLexer('2 d5')).should.deep.equal([n(2), r(1, 5)]);
+        collect(new RollLexer('  2  d5      ')).should.deep.equal([n(2), r(1, 5)]);
+    }
+
+    @test 'should lex roll expressions'() {
+        collect(new RollLexer('[ (2d4 - 6) * d8 ]')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+        collect(new RollLexer('  [ (  2d4   -     6 ) * d8  ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+        collect(new RollLexer('[(2d4-6)*d8]')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+        collect(new RollLexer(' [ (2d4  -6)* d8 ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+        collect(new RollLexer(' [ (2d4- 6) *d8 ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+    }
+
+    @test 'should throw on invalid syntax'() {
+        (() => collect(new RollLexer('r'))).should.throw('Invalid character: r');
+        (() => collect(new RollLexer('a'))).should.throw('Invalid character: a');
+        (() => collect(new RollLexer('d'))).should.throw("A number cannot start with 'null'.");
+
+        (() => collect(new RollLexer('2d'))).should.throw("A number cannot start with 'null'.");
+        (() => collect(new RollLexer('2dm'))).should.throw("A number cannot start with 'm'.");
+        (() => collect(new RollLexer('2d + 2'))).should.throw("A number cannot start with ' '.");
+        (() => collect(new RollLexer('2d+2'))).should.throw("A number cannot start with '+'.");
+    }
+}
