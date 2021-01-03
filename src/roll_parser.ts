@@ -1,42 +1,55 @@
+const enum TokenKind {
+    OpenBracket = '[',
+    CloseBracket = ']',
+    OpenParen = '(',
+    CloseParen = ')',
+    Plus = '+',
+    Minus = '-',
+    Mult = '*',
+    Div = '/',
+    Num = 'num',
+    Roll = 'roll',
+}
+
 interface OpenBracketToken {
-    kind: '[';
+    kind: TokenKind.OpenBracket;
 }
 
 interface CloseBracketToken {
-    kind: ']';
+    kind: TokenKind.CloseBracket;
 }
 
 interface OpenParenToken {
-    kind: '(';
+    kind: TokenKind.OpenParen;
 }
 
 interface CloseParenToken {
-    kind: ')';
+    kind: TokenKind.CloseParen;
 }
 
 interface PlusToken {
-    kind: '+';
+    kind: TokenKind.Plus;
 }
 
 interface MinusToken {
-    kind: '-';
+    kind: TokenKind.Minus;
 }
 
 interface MultToken {
-    kind: '*';
+    kind: TokenKind.Mult;
 }
 
 interface DivToken {
-    kind: '/';
+    kind: TokenKind.Div;
 }
 
 interface NumToken {
-    kind: 'num';
+    kind: TokenKind.Num;
     value: number;
 }
 
 interface RollToken {
-    kind: 'roll';
+    kind: TokenKind.Roll;
     numDice: number;
     dieValue: number;
 }
@@ -53,7 +66,15 @@ type Token =
     | NumToken
     | RollToken;
 
-type BasicTokenKind = '[' | ']' | '+' | '-' | '(' | ')' | '*' | '/';
+type BasicTokenKind =
+    | TokenKind.OpenBracket
+    | TokenKind.CloseBracket
+    | TokenKind.OpenParen
+    | TokenKind.CloseParen
+    | TokenKind.Plus
+    | TokenKind.Minus
+    | TokenKind.Mult
+    | TokenKind.Div;
 
 export class Peeker<T> {
     private readonly inner: {next: () => T | null};
@@ -102,32 +123,32 @@ export class RollLexer {
 
         switch (this.innerPeek()) {
             case '[':
-                return this.basicToken('[');
+                return this.basicToken(TokenKind.OpenBracket);
             case ']':
-                return this.basicToken(']');
+                return this.basicToken(TokenKind.CloseBracket);
             case '(':
-                return this.basicToken('(');
+                return this.basicToken(TokenKind.OpenParen);
             case ')':
-                return this.basicToken(')');
+                return this.basicToken(TokenKind.CloseParen);
             case '+':
-                return this.basicToken('+');
+                return this.basicToken(TokenKind.Plus);
             case '-':
-                return this.basicToken('-');
+                return this.basicToken(TokenKind.Minus);
             case '*':
-                return this.basicToken('*');
+                return this.basicToken(TokenKind.Mult);
             case '/':
-                return this.basicToken('/');
+                return this.basicToken(TokenKind.Div);
             case 'd':
                 this.innerNext();
-                return {kind: 'roll', numDice: 1, dieValue: this.lexNumber()};
+                return {kind: TokenKind.Roll, numDice: 1, dieValue: this.lexNumber()};
             default:
                 if (this.innerPeek() !== null && /\d/u.test(this.innerPeek()!)) {
                     const num = this.lexNumber();
                     if (this.innerPeek() !== null && this.innerPeek() === 'd') {
                         this.innerNext();
-                        return {kind: 'roll', numDice: num, dieValue: this.lexNumber()};
+                        return {kind: TokenKind.Roll, numDice: num, dieValue: this.lexNumber()};
                     } else {
-                        return {kind: 'num', value: num};
+                        return {kind: TokenKind.Num, value: num};
                     }
                 } else {
                     throw new Error(`Invalid character: ${this.innerPeek()}`);
@@ -135,7 +156,7 @@ export class RollLexer {
         }
     }
 
-    private basicToken<T extends BasicTokenKind>(token: T): {kind: BasicTokenKind} {
+    private basicToken<T extends BasicTokenKind>(token: T): {kind: T} {
         this.innerNext();
         return {kind: token};
     }
