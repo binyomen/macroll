@@ -202,3 +202,110 @@ export class RollLexer {
         return n;
     }
 }
+
+export const enum ExprKind {
+    Operator = 'op',
+    Num = 'num',
+    Roll = 'roll',
+}
+
+export interface OperatorExpr {
+    kind: ExprKind.Operator;
+    op: PlusToken | MinusToken | MultToken | DivToken;
+    lhs: RollExpr;
+    rhs: RollExpr;
+}
+
+export interface NumTerm {
+    kind: ExprKind.Num;
+    value: number;
+}
+
+export interface RollTerm {
+    kind: ExprKind.Roll;
+    numDice: number;
+    dieValue: number;
+}
+
+export type RollExpr = OperatorExpr | NumTerm | RollTerm;
+
+export class RollParser {
+    private readonly lexer: Peeker<Token>;
+
+    public constructor(str: string) {
+        this.lexer = new Peeker(new RollLexer(str));
+    }
+
+    public parse(): RollExpr {
+        this.consume(TokenKind.OpenBracket);
+
+        const expr = this.parseExpression();
+
+        this.consume(TokenKind.CloseBracket);
+        return expr;
+    }
+
+    private next(): Token | null {
+        return this.lexer.next();
+    }
+
+    private peek(): Token | null {
+        return this.lexer.peek();
+    }
+
+    private consume(kind: BasicTokenKind): void {
+        if (this.peek() === null) {
+            throw new Error('Unexpected end of syntax.');
+        }
+
+        if (this.peek()!.kind === kind) {
+            this.next();
+        } else {
+            const tokenType = this.peek()!.kind;
+            throw new Error(`Unexpected token type '${tokenType}'. Expected '${kind}'.`);
+        }
+    }
+
+    private parseExpression(): RollExpr {
+        const lhs = this.parseAddend();
+        if (this.peek() !== null && [TokenKind.Plus, TokenKind.Minus].includes(this.peek()!.kind)) {
+            const operator = this.next()! as PlusToken | MinusToken;
+            const rhs = this.parseExpression();
+            return {kind: ExprKind.Operator, op: operator, lhs, rhs};
+        } else {
+            return lhs;
+        }
+    }
+
+    private parseAddend(): RollExpr {
+        const lhs = this.parseFactor();
+        if (this.peek() !== null && [TokenKind.Mult, TokenKind.Div].includes(this.peek()!.kind)) {
+            const operator = this.next()! as MultToken | DivToken;
+            const rhs = this.parseAddend();
+            return {kind: ExprKind.Operator, op: operator, lhs, rhs};
+        } else {
+            return lhs;
+        }
+    }
+
+    private parseFactor(): RollExpr {
+        const next = this.next();
+        if (next === null) {
+            throw new Error('Unexpected end of syntax.');
+        }
+
+        switch (next.kind) {
+            case TokenKind.OpenParen: {
+                const expr = this.parseExpression();
+                this.consume(TokenKind.CloseParen);
+                return expr;
+            }
+            case TokenKind.Num:
+                return {kind: ExprKind.Num, value: next.value};
+            case TokenKind.Roll:
+                return {kind: ExprKind.Roll, numDice: next.numDice, dieValue: next.dieValue};
+            default:
+                throw new Error(`Unexpected token: ${next.kind}`);
+        }
+    }
+}

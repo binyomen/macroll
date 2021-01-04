@@ -1,6 +1,6 @@
 import {suite, test} from '@testdeck/mocha';
 import * as chai from 'chai';
-import {Peeker, RollLexer} from '../src/roll_parser';
+import {Peeker, RollLexer, RollParser, ExprKind, RollExpr, OperatorExpr, NumTerm, RollTerm} from '../src/roll_parser';
 
 const should = chai.should();
 
@@ -149,58 +149,62 @@ function collect<T>(iter: {next: () => T | null}): T[] {
     }
 }
 
-function t(kind: string): {kind: string} {
+function tl(kind: string): {kind: string} {
     return {kind};
 }
 
-function n(num: number): {kind: string, value: number} {
+function nl(num: number): {kind: string, value: number} {
     return {kind: 'num', value: num};
 }
 
-function r(numDice: number, dieValue: number): {kind: string, numDice: number, dieValue: number} {
+function rl(numDice: number, dieValue: number): {kind: string, numDice: number, dieValue: number} {
     return {kind: 'roll', numDice, dieValue};
+}
+
+function validateLexer(input: string, expected: Object[]) {
+    collect(new RollLexer(input)).should.deep.equal(expected);
 }
 
 @suite class RollLexerTests {
     @test 'should lex an empty string'() {
-        collect(new RollLexer('')).should.deep.equal([]);
-        collect(new RollLexer('       ')).should.deep.equal([]);
+        validateLexer('', []);
+        validateLexer('       ', []);
     }
 
     @test 'should lex brackets'() {
-        collect(new RollLexer('[]][')).should.deep.equal([t('['), t(']'), t(']'), t('[')]);
-        collect(new RollLexer('  [ ]   ]  [ ')).should.deep.equal([t('['), t(']'), t(']'), t('[')]);
+        validateLexer('[]][', [tl('['), tl(']'), tl(']'), tl('[')]);
+        validateLexer('  [ ]   ]  [ ', [tl('['), tl(']'), tl(']'), tl('[')]);
     }
 
     @test 'should lex parens'() {
-        collect(new RollLexer('())(')).should.deep.equal([t('('), t(')'), t(')'), t('(')]);
-        collect(new RollLexer('  ( )   )  ( ')).should.deep.equal([t('('), t(')'), t(')'), t('(')]);
+        validateLexer('())(', [tl('('), tl(')'), tl(')'), tl('(')]);
+        validateLexer('  ( )   )  ( ', [tl('('), tl(')'), tl(')'), tl('(')]);
     }
 
     @test 'should lex operators'() {
-        collect(new RollLexer('+-*/')).should.deep.equal([t('+'), t('-'), t('*'), t('/')]);
-        collect(new RollLexer('  + - *    / ')).should.deep.equal([t('+'), t('-'), t('*'), t('/')]);
+        validateLexer('+-*/', [tl('+'), tl('-'), tl('*'), tl('/')]);
+        validateLexer('  + - *    / ', [tl('+'), tl('-'), tl('*'), tl('/')]);
     }
 
     @test 'should lex numbers'() {
-        collect(new RollLexer('5 8 3748 23 0')).should.deep.equal([n(5), n(8), n(3748), n(23), n(0)]);
-        collect(new RollLexer('   5   8  3748   23     0       ')).should.deep.equal([n(5), n(8), n(3748), n(23), n(0)]);
+        validateLexer('5 8 3748 23 0', [nl(5), nl(8), nl(3748), nl(23), nl(0)]);
+        validateLexer('   5   8  3748   23     0       ', [nl(5), nl(8), nl(3748), nl(23), nl(0)]);
     }
 
     @test 'should lex rolls'() {
-        collect(new RollLexer('d3 40d1 d100 7d7')).should.deep.equal([r(1, 3), r(40, 1), r(1, 100), r(7, 7)]);
-        collect(new RollLexer('  d3  40d1     d100  7d7    ')).should.deep.equal([r(1, 3), r(40, 1), r(1, 100), r(7, 7)]);
+        validateLexer('d3 40d1 d100 7d7', [rl(1, 3), rl(40, 1), rl(1, 100), rl(7, 7)]);
+        validateLexer('  d3  40d1     d100  7d7    ', [rl(1, 3), rl(40, 1), rl(1, 100), rl(7, 7)]);
 
-        collect(new RollLexer('2 d5')).should.deep.equal([n(2), r(1, 5)]);
-        collect(new RollLexer('  2  d5      ')).should.deep.equal([n(2), r(1, 5)]);
+        validateLexer('2 d5', [nl(2), rl(1, 5)]);
+        validateLexer('  2  d5      ', [nl(2), rl(1, 5)]);
     }
 
     @test 'should lex roll expressions'() {
-        collect(new RollLexer('[ (2d4 - 6) * d8 ]')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
-        collect(new RollLexer('  [ (  2d4   -     6 ) * d8  ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
-        collect(new RollLexer('[(2d4-6)*d8]')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
-        collect(new RollLexer(' [ (2d4  -6)* d8 ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
-        collect(new RollLexer(' [ (2d4- 6) *d8 ] ')).should.deep.equal([t('['), t('('), r(2, 4), t('-'), n(6), t(')'), t('*'), r(1, 8), t(']')]);
+        validateLexer('[ (2d4 - 6) * d8 ]', [tl('['), tl('('), rl(2, 4), tl('-'), nl(6), tl(')'), tl('*'), rl(1, 8), tl(']')]);
+        validateLexer('  [ (  2d4   -     6 ) * d8  ] ', [tl('['), tl('('), rl(2, 4), tl('-'), nl(6), tl(')'), tl('*'), rl(1, 8), tl(']')]);
+        validateLexer('[(2d4-6)*d8]', [tl('['), tl('('), rl(2, 4), tl('-'), nl(6), tl(')'), tl('*'), rl(1, 8), tl(']')]);
+        validateLexer(' [ (2d4  -6)* d8 ] ', [tl('['), tl('('), rl(2, 4), tl('-'), nl(6), tl(')'), tl('*'), rl(1, 8), tl(']')]);
+        validateLexer(' [ (2d4- 6) *d8 ] ', [tl('['), tl('('), rl(2, 4), tl('-'), nl(6), tl(')'), tl('*'), rl(1, 8), tl(']')]);
     }
 
     @test 'should throw on invalid syntax'() {
@@ -212,5 +216,118 @@ function r(numDice: number, dieValue: number): {kind: string, numDice: number, d
         (() => collect(new RollLexer('2dm'))).should.throw("A number cannot start with 'm'.");
         (() => collect(new RollLexer('2d + 2'))).should.throw("A number cannot start with ' '.");
         (() => collect(new RollLexer('2d+2'))).should.throw("A number cannot start with '+'.");
+    }
+}
+
+function op(operator: '+' | '-' | '*' | '/', lhs: RollExpr, rhs: RollExpr): OperatorExpr {
+    return {kind: ExprKind.Operator, op: {kind: operator}, lhs, rhs,};
+}
+
+function np(value: number): NumTerm {
+    return {kind: ExprKind.Num, value};
+}
+
+function rp(numDice: number, dieValue: number): RollTerm {
+    return {kind: ExprKind.Roll, numDice, dieValue};
+}
+
+function validateParser(input: string, expected: RollExpr) {
+    (new RollParser(input)).parse().should.deep.equal(expected);
+}
+
+@suite class RollParserTests {
+    @test 'should parse numbers'() {
+        validateParser('[0]', np(0));
+        validateParser('[5]', np(5));
+        validateParser('[483]', np(483));
+    }
+
+    @test 'should parse rolls'() {
+        validateParser('[d5]', rp(1, 5));
+        validateParser('[4d20]', rp(4, 20));
+    }
+
+    @test 'should parse parentheses'() {
+        validateParser('[(0)]', np(0));
+        validateParser('[(4)]', np(4));
+        validateParser('[(28492)]', np(28492));
+        validateParser('[(d7)]', rp(1, 7));
+        validateParser('[(5d4)]', rp(5, 4));
+    }
+
+    @test 'should parse simple expressions'() {
+        validateParser('[3 + 9]', op('+', np(3), np(9)));
+        validateParser('[3 - 9]', op('-', np(3), np(9)));
+        validateParser('[3 * 9]', op('*', np(3), np(9)));
+        validateParser('[3 / 9]', op('/', np(3), np(9)));
+
+        validateParser('[d10 + 2d4]', op('+', rp(1, 10), rp(2, 4)));
+        validateParser('[d10 - 2d4]', op('-', rp(1, 10), rp(2, 4)));
+        validateParser('[d10 * 2d4]', op('*', rp(1, 10), rp(2, 4)));
+        validateParser('[d10 / 2d4]', op('/', rp(1, 10), rp(2, 4)));
+
+        validateParser('[d10 + 8 + 2d4]', op('+', rp(1, 10), op('+', np(8), rp(2, 4))));
+        validateParser('[d10 - 8 - 2d4]', op('-', rp(1, 10), op('-', np(8), rp(2, 4))));
+        validateParser('[d10 * 8 * 2d4]', op('*', rp(1, 10), op('*', np(8), rp(2, 4))));
+        validateParser('[d10 / 8 / 2d4]', op('/', rp(1, 10), op('/', np(8), rp(2, 4))));
+
+        validateParser('[d10 + 8 / 2d4]', op('+', rp(1, 10), op('/', np(8), rp(2, 4))));
+        validateParser('[d10 - 8 * 2d4]', op('-', rp(1, 10), op('*', np(8), rp(2, 4))));
+        validateParser('[d10 * 8 - 2d4]', op('-', op('*', rp(1, 10), np(8)), rp(2, 4)));
+        validateParser('[d10 / 8 + 2d4]', op('+', op('/', rp(1, 10), np(8)), rp(2, 4)));
+    }
+
+    @test 'should parse complex expressions'() {
+        validateParser('[d10 + 8 + 2d4 / 8d6 * 9 * 0 - 3d10]',
+            op('+',
+                rp(1, 10),
+                op('+',
+                    np(8),
+                    op('-',
+                        op('/',
+                            rp(2, 4),
+                            op('*',
+                                rp(8, 6),
+                                op('*', np(9), np(0)),
+                            ),
+                        ),
+                        rp(3, 10),
+                    ),
+                ),
+            ),
+        );
+
+        validateParser('[(3 + 4) * d20]', op('*', op('+', np(3), np(4)), rp(1, 20)));
+        validateParser('[((3 + 4) * d20) / d8 * d6 - (12 / 2d20)]',
+            op('-',
+                op('/',
+                    op('*',
+                        op('+', np(3), np(4)),
+                        rp(1, 20),
+                    ),
+                    op('*', rp(1, 8), rp(1, 6)),
+                ),
+                op('/', np(12), rp(2, 20)),
+            ),
+        );
+    }
+
+    @test 'should throw on invalid syntax'() {
+        (() => (new RollParser('')).parse()).should.throw('Unexpected end of syntax.');
+        (() => (new RollParser('1')).parse()).should.throw("Unexpected token type 'num'. Expected '['.");
+        (() => (new RollParser('[1')).parse()).should.throw('Unexpected end of syntax.');
+        (() => (new RollParser('[(1')).parse()).should.throw('Unexpected end of syntax.');
+        (() => (new RollParser('[(1]')).parse()).should.throw("Unexpected token type ']'. Expected ')'.");
+
+        (() => (new RollParser('[')).parse()).should.throw('Unexpected end of syntax.');
+        (() => (new RollParser('[[')).parse()).should.throw('Unexpected token: [');
+
+        (() => (new RollParser('[+4]')).parse()).should.throw('Unexpected token: +');
+        (() => (new RollParser('[4 +]')).parse()).should.throw('Unexpected token: ]');
+        (() => (new RollParser('[*4]')).parse()).should.throw('Unexpected token: *');
+        (() => (new RollParser('[4 +]')).parse()).should.throw('Unexpected token: ]');
+
+        (() => (new RollParser('[4 8')).parse()).should.throw("Unexpected token type 'num'. Expected ']'.");
+        (() => (new RollParser('[4 8]')).parse()).should.throw("Unexpected token type 'num'. Expected ']'.");
     }
 }

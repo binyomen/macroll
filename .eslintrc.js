@@ -41,6 +41,7 @@ module.exports = {
         'default-case': 'off',
         'dot-location': ['error', 'property'],
         'max-lines-per-function': 'off',
+        'max-lines': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],
