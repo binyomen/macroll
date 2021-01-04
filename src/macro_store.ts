@@ -11,7 +11,7 @@ export async function initialize(): Promise<void> {
                 new macroll.RollExpr(new macroll.RollOperator('+', new macroll.Roll(1, 20), 5));
             const dmgRoll =
                 new macroll.RollExpr(new macroll.RollOperator('+', new macroll.Roll(2, 4), 2));
-            const newMessage = await macroll.mod.dnd.atk('shoot', atkRoll, dmgRoll, 'adv');
+            const newMessage = await macroll.mod.dnd.atk('shoot', atkRoll, dmgRoll, 'adv', 'Kaita');
 
             const damageElts = newMessage.querySelectorAll('.sheet-damage .inlinerollresult');
             const damage = Array.from(damageElts)
