@@ -24,13 +24,6 @@ macroll.registerMacro('atk',
             fields.charname = charname;
         }
 
-        const newMessage = await macroll.sendCommand({name: 'atkdmg', fields});
-
-        const damageElts = newMessage.querySelectorAll('.sheet-damage .inlinerollresult');
-        const damage = Array.from(damageElts)
-            .map(e => e.innerText)
-            .map(s => Number.parseInt(s, 10))
-            .reduce((acc, v) => acc + v, 0);
-        await macroll.sendCommand(`Total damage: ${damage}`);
+        return await macroll.sendCommand({name: 'atkdmg', fields});
     }
 );
