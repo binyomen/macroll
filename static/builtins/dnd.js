@@ -30,7 +30,7 @@ macroll.registerMacro('atk',
         const damage = Array.from(damageElts)
             .map(e => e.innerText)
             .map(s => Number.parseInt(s, 10))
-            .reduce((acc, v) => acc + v);
+            .reduce((acc, v) => acc + v, 0);
         await macroll.sendCommand(`Total damage: ${damage}`);
     }
 );

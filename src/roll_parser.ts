@@ -211,7 +211,7 @@ export const enum ExprKind {
 
 export interface OperatorExpr {
     kind: ExprKind.Operator;
-    op: PlusToken | MinusToken | MultToken | DivToken;
+    op: TokenKind.Plus | TokenKind.Minus | TokenKind.Mult | TokenKind.Div;
     lhs: RollExpr;
     rhs: RollExpr;
 }
@@ -269,9 +269,9 @@ export class RollParser {
     private parseExpression(): RollExpr {
         const lhs = this.parseAddend();
         if (this.peek() !== null && [TokenKind.Plus, TokenKind.Minus].includes(this.peek()!.kind)) {
-            const operator = this.next()! as PlusToken | MinusToken;
+            const op = this.next()!.kind as TokenKind.Plus | TokenKind.Minus;
             const rhs = this.parseExpression();
-            return {kind: ExprKind.Operator, op: operator, lhs, rhs};
+            return {kind: ExprKind.Operator, op, lhs, rhs};
         } else {
             return lhs;
         }
@@ -280,9 +280,9 @@ export class RollParser {
     private parseAddend(): RollExpr {
         const lhs = this.parseFactor();
         if (this.peek() !== null && [TokenKind.Mult, TokenKind.Div].includes(this.peek()!.kind)) {
-            const operator = this.next()! as MultToken | DivToken;
+            const op = this.next()!.kind as TokenKind.Mult | TokenKind.Div;
             const rhs = this.parseAddend();
-            return {kind: ExprKind.Operator, op: operator, lhs, rhs};
+            return {kind: ExprKind.Operator, op, lhs, rhs};
         } else {
             return lhs;
         }

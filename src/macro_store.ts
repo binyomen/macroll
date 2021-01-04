@@ -7,11 +7,11 @@ export async function initialize(): Promise<void> {
 
     addModuleToPage('testmod', `
         macroll.registerMacro('shoot', async () => {
-            const atkRoll = {numDice: 1, dieValue: 20, operator: 'Operator.Plus'};
-            const dmgRoll = {numDice: 2, dieValue: 4, operator: 'Operator.Plus'};
-            const atkSet = {rolls: [atkRoll], modifier: 5};
-            const dmgSet = {rolls: [dmgRoll], modifier: 2};
-            await macroll.mod.dnd.atk('shoot', atkSet, dmgSet);
+            const atkRoll =
+                new macroll.RollExpr(new macroll.RollOperator('+', new macroll.Roll(1, 20), 5));
+            const dmgRoll =
+                new macroll.RollExpr(new macroll.RollOperator('+', new macroll.Roll(2, 4), 2));
+            await macroll.mod.dnd.atk('shoot', atkRoll, dmgRoll);
         });
     `);
 }

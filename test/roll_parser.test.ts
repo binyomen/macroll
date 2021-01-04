@@ -220,7 +220,7 @@ function validateLexer(input: string, expected: Object[]) {
 }
 
 function op(operator: '+' | '-' | '*' | '/', lhs: RollExpr, rhs: RollExpr): OperatorExpr {
-    return {kind: ExprKind.Operator, op: {kind: operator}, lhs, rhs,};
+    return {kind: ExprKind.Operator, op: operator, lhs, rhs,};
 }
 
 function np(value: number): NumTerm {

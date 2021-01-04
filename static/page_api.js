@@ -6,6 +6,12 @@ const modules = {};
 
 document.body.addEventListener('macroll-run-macro', async e => {
     const macroCall = JSON.parse(e.detail);
+    for (let i = 0; i < macroCall.args.length; i += 1) {
+        if (typeof macroCall.args[i] === 'object') {
+            macroCall.args[i] = new RollExpr(toRollExpression(macroCall.args[i]));
+        }
+    }
+
     const [mod, macro] = macroCall.name.split('.', 2);
     await modules[mod][macro](...macroCall.args);
 });
@@ -15,8 +21,61 @@ export function fromModuleName(moduleName) {
     return {
         registerMacro: registerMacroFactory(moduleName),
         sendCommand: sendCommandFactory(moduleName),
+        RollExpr: RollExpr,
+        Roll: Roll,
+        RollOperator: RollOperator,
         mod: modules,
     };
+}
+
+class RollExpr {
+    constructor(inner) {
+        this.kind = 'expr';
+        this.inner = inner;
+    }
+
+    toString() {
+        return `[[${this.inner}]]`;
+    }
+}
+
+class Roll {
+    constructor(numDice, dieValue) {
+        this.kind = 'roll';
+        this.numDice = numDice;
+        this.dieValue = dieValue;
+    }
+
+    toString() {
+        return `${this.numDice}d${this.dieValue}`;
+    }
+}
+
+class RollOperator {
+    constructor(op, lhs, rhs) {
+        this.kind = 'op';
+        this.op = op;
+        this.lhs = lhs;
+        this.rhs = rhs;
+    }
+
+    toString() {
+        return `(${this.lhs} ${this.op} ${this.rhs})`;
+    }
+}
+
+function toRollExpression(structure) {
+    switch (structure.kind) {
+        case 'op': {
+            const lhs = toRollExpression(structure.lhs);
+            const rhs = toRollExpression(structure.rhs);
+            return new RollOperator(structure.op, lhs, rhs);
+        }
+        case 'num':
+            return structure.value;
+        case 'roll':
+            return new Roll(structure.numDice, structure.dieValue);
+    }
 }
 
 function registerMacroFactory(moduleName) {
@@ -65,43 +124,10 @@ function toRoll20Syntax(command) {
     } else {
         let template = `&{template:${command.name}} `;
         for (const [key, value] of Object.entries(command.fields)) {
-            const valueString = (() => {
-                if (typeof value === 'object') {
-                    return rollSetToString(value);
-                } else {
-                    return value.toString();
-                }
-            })();
-            template += `{{${key}=${valueString}}} `;
+            template += `{{${key}=${value}}} `;
         }
         return template;
     }
-}
-
-function rollSetToString(rollSet) {
-    if (rollSet.rolls.length === 0) {
-        return `[[${rollSet.modifier}]]`;
-    } else {
-        let rollString = `[[${rollToString(rollSet.rolls[0])}`;
-
-        for (const roll of rollSet.rolls.slice(1)) {
-            const op = roll.operator === 'Operator.Plus' ? '+' : '-';
-            rollString += ` ${op} ${rollToString(roll)}`;
-        }
-
-        if (rollSet.modifier < 0) {
-            rollString += ` - ${Math.abs(rollSet.modifier)}`;
-        } else {
-            rollString += ` + ${rollSet.modifier}`;
-        }
-
-        rollString += ']]';
-        return rollString;
-    }
-}
-
-function rollToString(roll) {
-    return `${roll.numDice}d${roll.dieValue}`;
 }
 
 function getLastMessage() {
