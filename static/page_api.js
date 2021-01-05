@@ -21,17 +21,40 @@ export function fromModuleName(moduleName) {
     return {
         registerMacro: registerMacroFactory(moduleName),
         sendCommand: sendCommandFactory(moduleName),
-        RollExpr: RollExpr,
-        Roll: Roll,
-        RollOperator: RollOperator,
+        num,
+        roll,
         mod: modules,
     };
+}
+
+function doRollExprOperation(op, lhs, rhs) {
+    if (typeof rhs === 'number') {
+        return doRollExprOperation(op, lhs, new RollExpr(rhs));
+    } else {
+        return new RollExpr(new RollOperator(op, lhs.inner, rhs.inner));
+    }
 }
 
 class RollExpr {
     constructor(inner) {
         this.kind = 'expr';
         this.inner = inner;
+    }
+
+    plus(other) {
+        return doRollExprOperation('+', this, other);
+    }
+
+    minus(other) {
+        return doRollExprOperation('-', this, other);
+    }
+
+    multipliedBy(other) {
+        return doRollExprOperation('*', this, other);
+    }
+
+    dividedBy(other) {
+        return doRollExprOperation('/', this, other);
     }
 
     toString() {
@@ -62,6 +85,14 @@ class RollOperator {
     toString() {
         return `(${this.lhs} ${this.op} ${this.rhs})`;
     }
+}
+
+function num(value) {
+    return new RollExpr(value);
+}
+
+function roll(numDice, dieValue) {
+    return new RollExpr(new Roll(numDice, dieValue));
 }
 
 function toRollExpression(structure) {
