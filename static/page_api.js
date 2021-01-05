@@ -86,7 +86,9 @@ class RollOperator {
     }
 
     toString() {
-        return `(${this.lhs} ${this.op} ${this.rhs})`;
+        const lhs = isOperator(this.lhs) ? `(${this.lhs})` : `${this.lhs}`;
+        const rhs = isOperator(this.rhs) ? `(${this.rhs})` : `${this.rhs}`;
+        return `${lhs} ${this.op} ${rhs}`;
     }
 }
 
@@ -103,11 +105,11 @@ function isNumber(v) {
 }
 
 function isRoll(v) {
-    return 'kind' in v && v.kind === 'roll';
+    return typeof v === 'object' && 'kind' in v && v.kind === 'roll';
 }
 
 function isOperator(v) {
-    return 'kind' in v && v.kind === 'op';
+    return typeof v === 'object' && 'kind' in v && v.kind === 'op';
 }
 
 function toRollExpression(structure) {
