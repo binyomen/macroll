@@ -1,5 +1,5 @@
+import {getModules, setModules} from './storage';
 import {browser} from 'webextension-polyfill-ts';
-import {getModules} from './storage';
 
 // eslint-disable-next-line @typescript-eslint/init-declarations
 let NEW_MODULE_BUTTON: HTMLButtonElement;
@@ -13,12 +13,7 @@ window.addEventListener('load', async () => {
 
     setupNewModuleButton();
 
-    const modules = await getModules();
-    const moduleElts = Object.keys(modules).map(createModuleElement);
-
-    for (const elt of moduleElts) {
-        MODULE_LIST.appendChild(elt);
-    }
+    await setupModuleList();
 });
 
 function setupNewModuleButton(): void {
@@ -32,6 +27,16 @@ function setupNewModuleButton(): void {
             await openEditPage(null);
         }
     });
+}
+
+async function setupModuleList(): Promise<void> {
+    const modules = await getModules();
+    const moduleElts = Object.keys(modules).map(createModuleElement);
+
+    MODULE_LIST.innerHTML = '';
+    for (const elt of moduleElts) {
+        MODULE_LIST.appendChild(elt);
+    }
 }
 
 function createModuleElement(moduleName: string): HTMLLIElement {
@@ -55,6 +60,16 @@ function createModuleElement(moduleName: string): HTMLLIElement {
 
     const deleteButton = document.createElement('button');
     deleteButton.innerText = 'X';
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    deleteButton.addEventListener('click', async () => {
+        await deleteModule(moduleName);
+    });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    deleteButton.addEventListener('keydown', async e => {
+        if (e.key === 'Enter' || e.key === 'Space') {
+            await deleteModule(moduleName);
+        }
+    });
     li.appendChild(deleteButton);
 
     return li;
@@ -65,4 +80,12 @@ async function openEditPage(moduleName: string | null): Promise<void> {
         'edit.html#' :
         `edit.html#${moduleName}`;
     await browser.tabs.create({url: browser.runtime.getURL(editUrl), active: true});
+}
+
+async function deleteModule(moduleName: string): Promise<void> {
+    const modules = await getModules();
+    delete modules[moduleName];
+    await setModules(modules);
+
+    await setupModuleList();
 }

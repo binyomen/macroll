@@ -65,6 +65,7 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-extra-parens': 'off',
         '@typescript-eslint/naming-convention': ['error', {selector: 'enumMember', format: ['PascalCase']}],
+        '@typescript-eslint/no-dynamic-delete': 'off',
     },
     env: {
         es6: true,
