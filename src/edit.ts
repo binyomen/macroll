@@ -17,7 +17,7 @@ window.addEventListener('load', async () => {
     const isNewModule = moduleName.length === 0;
 
     const moduleNameText = isNewModule ?
-        'New module' :
+        'newmod' :
         moduleName;
 
     MODULE_NAME_INPUT.value = moduleNameText;
