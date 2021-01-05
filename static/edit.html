@@ -7,7 +7,13 @@
     </head>
     <body>
         <input id="module-name"></input>
-        <textarea id="text-edit" rows="20">example text</textarea>
+        <textarea id="text-edit" rows="20">
+macroll.registerMacro('punch_real_hard', async () =&gt; {
+    const atkRoll = macroll.roll(1, 20).plus(10);
+    const dmgRoll = macroll.roll(5, 12).plus(7);
+    await macroll.mod.dnd.atk('punch', atkRoll, dmgRoll, 'adv');
+    await macroll.sendCommand('Boom!');
+});</textarea>
         <button id="save-button">Save</button>
     </body>
 </html>
