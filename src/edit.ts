@@ -7,7 +7,8 @@ let TEXT_ENTRY: HTMLTextAreaElement;
 // eslint-disable-next-line @typescript-eslint/init-declarations
 let SAVE_BUTTON: HTMLButtonElement;
 
-window.addEventListener('load', () => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+window.addEventListener('load', async () => {
     MODULE_NAME_INPUT = document.getElementById('module-name')! as HTMLInputElement;
     TEXT_ENTRY = document.getElementById('text-edit')! as HTMLTextAreaElement;
     SAVE_BUTTON = document.getElementById('save-button')! as HTMLButtonElement;
@@ -20,6 +21,11 @@ window.addEventListener('load', () => {
         moduleName;
 
     MODULE_NAME_INPUT.value = moduleNameText;
+
+    const modules = await getModules();
+    if (moduleName in modules) {
+        TEXT_ENTRY.value = modules[moduleName]!;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     SAVE_BUTTON.addEventListener('click', async () => {
@@ -36,7 +42,7 @@ window.addEventListener('load', () => {
 async function saveModule(isNewModule: boolean): Promise<void> {
     const modules = await getModules();
     const moduleName = MODULE_NAME_INPUT.value;
-    const shouldSave = isNewModule && Object.keys(modules).includes(moduleName) ?
+    const shouldSave = isNewModule && (moduleName in modules) ?
         confirm(`There is already a module with the name ${moduleName}. Do you want to overwrite it?`) :
         true;
 
