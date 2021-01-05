@@ -23,6 +23,9 @@ export function fromModuleName(moduleName) {
         sendCommand: sendCommandFactory(moduleName),
         num,
         roll,
+        isNumber,
+        isRoll,
+        isOperator,
         mod: modules,
     };
 }
@@ -93,6 +96,18 @@ function num(value) {
 
 function roll(numDice, dieValue) {
     return new RollExpr(new Roll(numDice, dieValue));
+}
+
+function isNumber(v) {
+    return typeof v === 'number';
+}
+
+function isRoll(v) {
+    return 'kind' in v && v.kind === 'roll';
+}
+
+function isOperator(v) {
+    return 'kind' in v && v.kind === 'op';
 }
 
 function toRollExpression(structure) {

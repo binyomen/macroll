@@ -6,6 +6,7 @@ macroll.registerMacro('atk',
             rname: name,
             r1: atk,
             r2: atk,
+            mod: getModifier(atk),
             dmg1: dmg,
             dmg1flag: 1,
             crit: 1,
@@ -27,3 +28,15 @@ macroll.registerMacro('atk',
         return await macroll.sendCommand({name: 'atkdmg', fields});
     }
 );
+
+function getModifier(roll) {
+    const inner = roll.inner;
+    if (macroll.isOperator(inner) &&
+            ['+', '-'].includes(inner.op) &&
+            macroll.isRoll(inner.lhs) &&
+            macroll.isNumber(inner.rhs)) {
+        return `${inner.op}${inner.rhs}`;
+    } else {
+        return roll.inner.toString();
+    }
+}
