@@ -19,3 +19,7 @@ ul#module-list{
 #module-list > li > button {
     margin-left: 0.3em;
 }
+
+#textedit {
+    width: 80%;
+}
