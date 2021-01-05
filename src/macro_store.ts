@@ -1,9 +1,15 @@
 import {browser} from 'webextension-polyfill-ts';
+import {getModules} from './storage';
 
 export async function initialize(): Promise<void> {
     const dndResponse = await fetch(browser.runtime.getURL('builtins/dnd.js'));
     const dndCode = await dndResponse.text();
     addModuleToPage('dnd', dndCode);
+
+    const modules = await getModules();
+    for (const [moduleName, moduleContent] of Object.entries(modules)) {
+        addModuleToPage(moduleName, moduleContent);
+    }
 
     addModuleToPage('testmod', `
         macroll.registerMacro('shoot', async () => {
