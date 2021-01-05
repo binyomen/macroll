@@ -20,7 +20,7 @@ module.exports = {
         'no-console': 'off',
         'id-length': 'off',
         'max-classes-per-file': 'off',
-        'max-len': ['error', 100],
+        'max-len': ['error', 120],
         'one-var': 'off',
         'no-magic-numbers': 'off',
         'lines-between-class-members': 'off',
@@ -42,6 +42,7 @@ module.exports = {
         'dot-location': ['error', 'property'],
         'max-lines-per-function': 'off',
         'max-lines': 'off',
+        'no-alert': 'off',
 
         quotes: 'off',
         '@typescript-eslint/quotes': ['error', 'single'],

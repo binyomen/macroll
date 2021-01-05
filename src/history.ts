@@ -1,4 +1,4 @@
-import {browser} from 'webextension-polyfill-ts';
+import {getHistory, setHistory} from './storage';
 
 let backend: IHistoryBackend; // eslint-disable-line @typescript-eslint/init-declarations
 let currentLine: string; // eslint-disable-line @typescript-eslint/init-declarations
@@ -56,30 +56,22 @@ async function indexToInternal(index: number): Promise<number> {
 }
 
 export class SyncStorage implements IHistoryBackend {
+    // eslint-disable-next-line class-methods-use-this
     public async get(i: number): Promise<string | undefined> {
-        const arr = await this.getArr();
+        const arr = await getHistory();
         return arr[i];
     }
 
+    // eslint-disable-next-line class-methods-use-this
     public async length(): Promise<number> {
-        const arr = await this.getArr();
+        const arr = await getHistory();
         return arr.length;
     }
 
-    public async push(s: string): Promise<void> {
-        const arr = await this.getArr();
-        arr.push(s);
-        await browser.storage.sync.set({history: arr});
-    }
-
     // eslint-disable-next-line class-methods-use-this
-    private async getArr(): Promise<string[]> {
-        const results = await browser.storage.sync.get('history');
-        if ('history' in results) {
-            return results.history as string[];
-        } else {
-            await browser.storage.sync.set({history: []});
-            return [];
-        }
+    public async push(s: string): Promise<void> {
+        const arr = await getHistory();
+        arr.push(s);
+        await setHistory(arr);
     }
 }

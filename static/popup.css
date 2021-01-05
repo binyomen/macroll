@@ -27,3 +27,6 @@ ul#module-list{
 #module-name {
     display: block;
 }
+#save-button {
+    display: block;
+}

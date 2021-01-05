@@ -1,45 +1,37 @@
 import {browser} from 'webextension-polyfill-ts';
+import {getModules} from './storage';
 
-window.addEventListener('load', () => {
+// eslint-disable-next-line @typescript-eslint/init-declarations
+let NEW_MODULE_BUTTON: HTMLButtonElement;
+// eslint-disable-next-line @typescript-eslint/init-declarations
+let MODULE_LIST: HTMLUListElement;
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+window.addEventListener('load', async () => {
+    NEW_MODULE_BUTTON = document.getElementById('new-module')! as HTMLButtonElement;
+    MODULE_LIST = document.getElementById('module-list')! as HTMLUListElement;
+
     setupNewModuleButton();
 
-    const modules = getModules();
+    const modules = await getModules();
     const moduleElts = Object.keys(modules).map(createModuleElement);
 
-    const listElt = document.getElementById('module-list')!;
     for (const elt of moduleElts) {
-        listElt.appendChild(elt);
+        MODULE_LIST.appendChild(elt);
     }
 });
 
 function setupNewModuleButton(): void {
-    const button = document.getElementById('new-module')!;
-
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    button.addEventListener('click', async () => {
+    NEW_MODULE_BUTTON.addEventListener('click', async () => {
         await openEditPage(null);
     });
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    button.addEventListener('keydown', async e => {
+    NEW_MODULE_BUTTON.addEventListener('keydown', async e => {
         if (e.key === 'Enter' || e.key === 'Space') {
             await openEditPage(null);
         }
     });
-}
-
-function getModules(): Record<string, string> {
-    return {
-        mod1: `
-            macroll.registerMacro('shoot', async () => {
-                await macroll.sendCommand('pew pew!');
-            });
-        `,
-        mod2: `
-            macroll.registerMacro('punch', async () => {
-                await macroll.sendCommand('whack!');
-            });
-        `,
-    };
 }
 
 function createModuleElement(moduleName: string): HTMLLIElement {
