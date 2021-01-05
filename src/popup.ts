@@ -1,6 +1,8 @@
 import {browser} from 'webextension-polyfill-ts';
 
 window.addEventListener('load', () => {
+    setupNewModuleButton();
+
     const modules = getModules();
     const moduleElts = Object.keys(modules).map(createModuleElement);
 
@@ -9,6 +11,21 @@ window.addEventListener('load', () => {
         listElt.appendChild(elt);
     }
 });
+
+function setupNewModuleButton(): void {
+    const button = document.getElementById('new-module')!;
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    button.addEventListener('click', async () => {
+        await openEditPage(null);
+    });
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    button.addEventListener('keydown', async e => {
+        if (e.key === 'Enter' || e.key === 'Space') {
+            await openEditPage(null);
+        }
+    });
+}
 
 function getModules(): Record<string, string> {
     return {
@@ -51,7 +68,9 @@ function createModuleElement(moduleName: string): HTMLLIElement {
     return li;
 }
 
-async function openEditPage(moduleName: string): Promise<void> {
-    const editUrl = browser.runtime.getURL(`edit.html#${moduleName}`);
-    await browser.tabs.create({url: editUrl, active: true});
+async function openEditPage(moduleName: string | null): Promise<void> {
+    const editUrl = moduleName === null ?
+        'edit.html#' :
+        `edit.html#${moduleName}`;
+    await browser.tabs.create({url: browser.runtime.getURL(editUrl), active: true});
 }
