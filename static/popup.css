@@ -23,3 +23,7 @@ ul#module-list{
 #textedit {
     width: 80%;
 }
+
+#module-name {
+    display: block;
+}

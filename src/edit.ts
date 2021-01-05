@@ -1,9 +1,10 @@
 window.addEventListener('load', () => {
     const moduleName = window.location.hash.slice(1);
 
-    const headerText = moduleName.length === 0 ?
+    const moduleNameText = moduleName.length === 0 ?
         'New module' :
-        `Editing '${moduleName}'`;
+        moduleName;
 
-    document.getElementById('heading')!.innerText = headerText;
+    const moduleNameInput = document.getElementById('module-name')! as HTMLInputElement;
+    moduleNameInput.value = moduleNameText;
 });
