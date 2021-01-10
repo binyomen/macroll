@@ -45,7 +45,7 @@ function createModuleElement(moduleName: string): HTMLLIElement {
     li.appendChild(document.createTextNode(moduleName));
 
     const editButton = document.createElement('button');
-    editButton.innerText = 'E';
+    editButton.innerText = 'Edit';
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     editButton.addEventListener('click', async () => {
         await openEditPage(moduleName);
@@ -59,7 +59,7 @@ function createModuleElement(moduleName: string): HTMLLIElement {
     li.appendChild(editButton);
 
     const deleteButton = document.createElement('button');
-    deleteButton.innerText = 'X';
+    deleteButton.innerText = 'Delete';
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     deleteButton.addEventListener('click', async () => {
         await deleteModule(moduleName);
