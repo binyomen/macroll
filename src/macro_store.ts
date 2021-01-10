@@ -2,14 +2,8 @@ import {browser} from 'webextension-polyfill-ts';
 import {getModules} from './storage';
 
 export async function initialize(): Promise<void> {
-    const dndResponse = await fetch(browser.runtime.getURL('builtins/dnd.js'));
-    const dndCode = await dndResponse.text();
-    addModuleToPage('dnd', dndCode);
-
-    const modules = await getModules();
-    for (const [moduleName, moduleContent] of Object.entries(modules)) {
-        addModuleToPage(moduleName, moduleContent);
-    }
+    await addBuiltinModule('dnd');
+    await addUserModules();
 
     addModuleToPage('testmod', `
         macroll.registerMacro('shoot', async () => {
@@ -25,6 +19,8 @@ export async function initialize(): Promise<void> {
             await macroll.sendCommand(\`Total damage: $\{damage}\`);
         });
     `);
+
+    registerChangeListener();
 }
 
 function addModuleToPage(name: string, content: string): void {
@@ -44,4 +40,26 @@ ${content}`;
     script.id = id;
     script.text = newContent;
     document.head.appendChild(script);
+}
+
+async function addBuiltinModule(moduleName: string): Promise<void> {
+    const response = await fetch(browser.runtime.getURL(`builtins/${moduleName}.js`));
+    const code = await response.text();
+    addModuleToPage(moduleName, code);
+}
+
+async function addUserModules(): Promise<void> {
+    const modules = await getModules();
+    for (const [moduleName, moduleContent] of Object.entries(modules)) {
+        addModuleToPage(moduleName, moduleContent);
+    }
+}
+
+function registerChangeListener(): void {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    browser.storage.onChanged.addListener(async (_changes, areaName) => {
+        if (areaName === 'sync') {
+            await addUserModules();
+        }
+    });
 }
