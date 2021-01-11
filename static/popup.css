@@ -20,13 +20,15 @@ ul#module-list{
     margin-left: 0.3em;
 }
 
-#text-edit {
+#editor {
     width: 80%;
+    height: 30em;
 }
 
 #module-name {
     display: block;
 }
+
 #save-button {
     display: block;
 }

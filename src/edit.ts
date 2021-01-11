@@ -1,17 +1,31 @@
+import * as monaco from 'monaco-editor';
 import {getModules, setModules} from './storage';
 
 // eslint-disable-next-line @typescript-eslint/init-declarations
 let MODULE_NAME_INPUT: HTMLInputElement;
 // eslint-disable-next-line @typescript-eslint/init-declarations
-let TEXT_ENTRY: HTMLTextAreaElement;
-// eslint-disable-next-line @typescript-eslint/init-declarations
 let SAVE_BUTTON: HTMLButtonElement;
+
+// eslint-disable-next-line @typescript-eslint/init-declarations
+let EDITOR: monaco.editor.IStandaloneCodeEditor;
+
+const DEFAULT_CONTENT = `macroll.registerMacro('punch_real_hard', async () => {
+    const atkRoll = macroll.roll(1, 20).plus(10);
+    const dmgRoll = macroll.roll(5, 12).plus(7);
+    await macroll.mod.dnd.atk('punch', atkRoll, dmgRoll, 'adv');
+    await macroll.sendCommand('Boom!');
+});`;
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 window.addEventListener('load', async () => {
     MODULE_NAME_INPUT = document.getElementById('module-name')! as HTMLInputElement;
-    TEXT_ENTRY = document.getElementById('text-edit')! as HTMLTextAreaElement;
     SAVE_BUTTON = document.getElementById('save-button')! as HTMLButtonElement;
+
+    EDITOR = monaco.editor.create(document.getElementById('editor')!, {
+        value: DEFAULT_CONTENT,
+        language: 'javascript',
+        theme: 'vs-dark',
+    });
 
     const moduleName = window.location.hash.slice(1);
     const isNewModule = moduleName.length === 0;
@@ -24,7 +38,7 @@ window.addEventListener('load', async () => {
 
     const modules = await getModules();
     if (moduleName in modules) {
-        TEXT_ENTRY.value = modules[moduleName]!;
+        EDITOR.setValue(modules[moduleName]!);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -47,7 +61,7 @@ async function saveModule(isNewModule: boolean): Promise<void> {
         true;
 
     if (shouldSave) {
-        modules[moduleName] = TEXT_ENTRY.value;
+        modules[moduleName] = EDITOR.getValue();
         await setModules(modules);
     }
 }

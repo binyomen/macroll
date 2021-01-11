@@ -1,8 +1,10 @@
 const webpack = require('webpack');
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = 'src/';
 const isProd = process.env.NODE_ENV === 'production';
+
+const CopyPlugin = require('copy-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
     mode: isProd ? 'production' : 'development',
@@ -24,6 +26,14 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.ttf$/,
+                use: ['file-loader'],
+            },
         ],
     },
     resolve: {
@@ -32,6 +42,9 @@ module.exports = {
     plugins: [
         new CopyPlugin({
             patterns: [{ from: 'static', to: '.' }],
+        }),
+        new MonacoWebpackPlugin({
+            languages: ['typescript', 'javascript', 'css'],
         }),
     ],
 };
