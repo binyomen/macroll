@@ -44,7 +44,7 @@ module.exports = {
             patterns: [{ from: 'static', to: '.' }],
         }),
         new MonacoWebpackPlugin({
-            languages: ['typescript', 'javascript', 'css'],
+            languages: ['javascript'],
         }),
     ],
 };
