@@ -1,4 +1,4 @@
-macroll.registerMacro('atk', async (name, atk, dmg, advantage = 'norm', charname = '') => {
+macroll.registerMacro('atk', async (name, atk, dmg, dmgType, advantage = 'norm', charname = '') => {
     const fields = {
         attack: 1,
         damage: 1,
@@ -7,6 +7,7 @@ macroll.registerMacro('atk', async (name, atk, dmg, advantage = 'norm', charname
         r2: atk,
         mod: getModifier(atk),
         dmg1: dmg,
+        dmg1type: dmgType,
         dmg1flag: 1,
         crit: 1,
         crit1: dmg,
