@@ -12,7 +12,7 @@ let EDITOR: monaco.editor.IStandaloneCodeEditor;
 const DEFAULT_CONTENT = `macroll.registerMacro('punch_real_hard', async () => {
     const atkRoll = macroll.roll(1, 20).plus(10);
     const dmgRoll = macroll.roll(5, 12).plus(7);
-    await macroll.mod.dnd.atk('punch', atkRoll, dmgRoll, 'adv');
+    await macroll.mod.dnd.atk('punch', atkRoll, dmgRoll, 'bludgeoning', 'adv');
     await macroll.sendCommand('Boom!');
 });`;
 
