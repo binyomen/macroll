@@ -21,12 +21,6 @@ function setupNewModuleButton(): void {
     NEW_MODULE_BUTTON.addEventListener('click', async () => {
         await openEditPage(null);
     });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    NEW_MODULE_BUTTON.addEventListener('keydown', async e => {
-        if (e.key === 'Enter' || e.key === 'Space') {
-            await openEditPage(null);
-        }
-    });
 }
 
 async function setupModuleList(): Promise<void> {
@@ -50,12 +44,6 @@ function createModuleElement(moduleName: string): HTMLLIElement {
     editButton.addEventListener('click', async () => {
         await openEditPage(moduleName);
     });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    editButton.addEventListener('keydown', async e => {
-        if (e.key === 'Enter' || e.key === 'Space') {
-            await openEditPage(moduleName);
-        }
-    });
     li.appendChild(editButton);
 
     const deleteButton = document.createElement('button');
@@ -63,12 +51,6 @@ function createModuleElement(moduleName: string): HTMLLIElement {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     deleteButton.addEventListener('click', async () => {
         await deleteModule(moduleName);
-    });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    deleteButton.addEventListener('keydown', async e => {
-        if (e.key === 'Enter' || e.key === 'Space') {
-            await deleteModule(moduleName);
-        }
     });
     li.appendChild(deleteButton);
 

@@ -45,12 +45,6 @@ window.addEventListener('load', async () => {
     SAVE_BUTTON.addEventListener('click', async () => {
         await saveModule(isNewModule);
     });
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    SAVE_BUTTON.addEventListener('keydown', async e => {
-        if (e.key === 'Enter' || e.key === 'Space') {
-            await saveModule(isNewModule);
-        }
-    });
 });
 
 async function saveModule(isNewModule: boolean): Promise<void> {
