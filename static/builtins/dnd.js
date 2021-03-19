@@ -4,7 +4,6 @@ macroll.registerMacro('atk', async (name, atk, dmg, dmgType, advantage = 'norm',
         damage: 1,
         rname: name,
         r1: atk,
-        r2: atk,
         mod: getModifier(atk),
         dmg1: dmg,
         dmg1type: dmgType,
@@ -15,8 +14,10 @@ macroll.registerMacro('atk', async (name, atk, dmg, dmgType, advantage = 'norm',
 
     if (advantage === 'adv') {
         fields.advantage = 1;
+        fields.r2 = atk;
     } else if (advantage === 'dadv') {
         fields.disadvantage = 1;
+        fields.r2 = atk;
     } else {
         fields.normal = 1;
     }
@@ -32,14 +33,15 @@ macroll.registerMacro('chk', async (name, roll, advantage = 'norm', charname = '
     const fields = {
         rname: name,
         r1: roll,
-        r2: roll,
         mod: getModifier(roll),
     };
 
     if (advantage === 'adv') {
         fields.advantage = 1;
+        fields.r2 = roll;
     } else if (advantage === 'dadv') {
         fields.disadvantage = 1;
+        fields.r2 = roll;
     } else {
         fields.normal = 1;
     }
