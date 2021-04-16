@@ -29,6 +29,22 @@ macroll.registerMacro('atk', async (name, atk, dmg, dmgType, advantage = 'norm',
     return await macroll.sendCommand({name: 'atkdmg', fields});
 });
 
+macroll.registerMacro('dmg', async (name, dmg, dmgType, charname = '') => {
+    const fields = {
+        damage: 1,
+        rname: name,
+        dmg1: dmg,
+        dmg1type: dmgType,
+        dmg1flag: 1,
+    };
+
+    if (charname.length > 0) {
+        fields.charname = charname;
+    }
+
+    return await macroll.sendCommand({name: 'dmg', fields});
+});
+
 macroll.registerMacro('chk', async (name, roll, advantage = 'norm', charname = '') => {
     const fields = {
         rname: name,
